@@ -2,6 +2,7 @@
 
 #include "util/bufferedInputStream.hpp"
 #include "code/binaryFileParser.hpp"
+#include "code/codeObject.hpp"
 //#include "Object/hiInteger.hpp"
 //#include "Object/hiString.hpp"
 //#include "Object/hiObject.hpp"
@@ -12,7 +13,7 @@
 
 int main(int argc, char** argv) {
     BufferedInputStream input_stream(argv[1]);
-	BinaryFileParser parser(input_stream);
+	BinaryFileParser parser(&input_stream);
 	CodeObject* pMainCode = parser.parse();
 	return 0;
 }

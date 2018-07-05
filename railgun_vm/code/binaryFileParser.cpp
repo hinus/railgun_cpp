@@ -1,15 +1,12 @@
-#ifndef BINARY_FILE_PARSER_HPP
-#define BINARY_FILE_PARSER_HPP
+#include <iostream>
 
-#include "util/bufferedInputStream"
+#include "code/binaryFileParser.hpp"
 
-BinaryFileParser::BinaryFileParser(BufferedInputStream& file_stream) {
-	this.file_stream = file_stream;
+BinaryFileParser::BinaryFileParser(BufferedInputStream* buf_file_stream) {
+	file_stream = buf_file_stream;
 }
 
 CodeObject* BinaryFileParser::parse() {
-	int magic_number = file_stream.read_int();
-	cout << magic_number << endl;
+	int magic_number = file_stream->read_int();
+	std::cout << magic_number << std::endl;
 }
-
-#endif

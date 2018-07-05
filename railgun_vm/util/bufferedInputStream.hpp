@@ -1,3 +1,6 @@
+#ifndef BUFFERED_INPUT_STREAM_HPP
+#define BUFFERED_INPUT_STREAM_HPP
+
 #include <iostream>
 #include <fstream>
 
@@ -35,3 +38,5 @@ public:
         inputStream.close();
     }
 };
+
+#endif
