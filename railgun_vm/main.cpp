@@ -11,6 +11,9 @@
 
 int main(int argc, char** argv) {
     BufferedInputStream input_stream(argv[1]);
+	BinaryFileParser parser(input_stream);
+	CodeObject* pMainCode = parser.parse();
+	return 0;
     HiObject** consts;
     HiObject ** variables;
 
