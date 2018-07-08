@@ -32,7 +32,7 @@ CodeObject* BinaryFileParser::get_code_object() {
     int flags     = file_stream->read_int();
     std::cout << flags << std::endl;
 
-    char* byte_codes = get_byte_codes();
+    HiString* byte_codes = get_byte_codes();
     ArrayList<HiObject*>* consts     = get_consts();
 	ArrayList<HiObject*>* names      = get_names();
 	ArrayList<HiObject*>* var_names  = get_var_names();
@@ -82,18 +82,17 @@ HiString* BinaryFileParser::get_file_name() {
 	return get_name();
 }
 
-char* BinaryFileParser::get_byte_codes() {
+HiString* BinaryFileParser::get_byte_codes() {
     assert(file_stream->read() == 's');
 
     int length = file_stream->read_int();
-    char* code = new char[length + 1];
+    char* code = new char[length];
 
     for (int i = 0; i < length; i++) {
         code[i] = file_stream->read();
     }
-	code[length] = '\0';
 
-    return code;
+    return new HiString(code, length);
 }
 
 char* BinaryFileParser::get_no_table() {

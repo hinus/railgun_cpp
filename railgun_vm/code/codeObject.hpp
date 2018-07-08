@@ -14,7 +14,7 @@ public:
 	int _stack_size;
 	int _flag;
 
-	char* _bytecodes;
+	HiString* _bytecodes;
 	ArrayList<HiObject*>*  _names;
 	ArrayList<HiObject*>*  _consts;
 	ArrayList<HiObject*>*  _var_names;
@@ -28,7 +28,7 @@ public:
 	int _lineno;
 	char* _notable;
 
-	CodeObject(int argcount, int nlocals, int stacksize, int flag, char* bytecodes,
+	CodeObject(int argcount, int nlocals, int stacksize, int flag, HiString* bytecodes,
                       ArrayList<HiObject*>* consts, ArrayList<HiObject*>* names, ArrayList<HiObject*>* varnames, 
 					  ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
 					  HiString* file_name, HiString* module_name, int lineno, char* notable):
