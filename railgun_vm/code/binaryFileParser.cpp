@@ -193,5 +193,5 @@ ArrayList<HiObject*>* BinaryFileParser::get_tuple() {
         }
     }
 
-	return NULL;
+	return list;
 }

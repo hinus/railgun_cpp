@@ -11,6 +11,7 @@ ADD_EXECUTABLE(railgun main.cpp
 	object/hiInteger.cpp
     object/hiTypeObject.cpp
 	object/hiNoneObject.cpp
+	object/hiString.cpp
 	util/bufferedInputStream.cpp
 	util/arrayList.cpp
 	code/binaryFileParser.cpp

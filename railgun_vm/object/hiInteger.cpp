@@ -1,4 +1,5 @@
 #include "object/hiInteger.hpp"
+#include <assert.h>
 
 HiInteger::HiInteger(int x) {
     _value = x;
@@ -17,8 +18,7 @@ IntegerKlass* IntegerKlass::get_instance() {
 void IntegerKlass::print(HiObject* obj) {
 	HiInteger* int_obj = (HiInteger*) obj;
 
-	if (!int_obj)
-		return;
+	assert(int_obj && ((char *)int_obj->klass()) == ((char *)this));
 
 	printf("%d", int_obj->value());
 }
