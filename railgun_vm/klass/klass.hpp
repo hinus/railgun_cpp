@@ -26,7 +26,7 @@ public:
 
     virtual void print(HiObject* obj) {}
 
-    virtual HiObject* add(HiObject* x, HiObject* y) { return NULL; }
+	virtual HiObject* add(HiObject* x, HiObject* y) { return NULL; }
     virtual HiObject* sub(HiObject* x, HiObject* y) { return NULL; }
     virtual HiObject* mul(HiObject* x, HiObject* y) { return NULL; }
     virtual HiObject* div(HiObject* x, HiObject* y) { return NULL; }

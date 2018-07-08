@@ -12,6 +12,7 @@ public:
     ArrayList(int n = 16);
 
     void add(T t);
+	T    get(int index);
 };
 
 #endif

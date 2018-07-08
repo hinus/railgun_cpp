@@ -8,7 +8,7 @@ private:
     int _value;
 
 public:
-    HiInteger(int x);
+	HiInteger(int x) : _value(x) {};
 
     int value() { return _value; }
 
