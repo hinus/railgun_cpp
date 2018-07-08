@@ -46,13 +46,13 @@ public:
 		_module_name(module_name),
 		_lineno(lineno),
 		_notable(notable){
-			std::cout << "lnotable length is " << strlen(notable) << std::endl;
+			//std::cout << "lnotable length is " << strlen(notable) << std::endl;
 			std::cout << "file name is ";
 			file_name->print();
 			std::cout << std::endl;
 
 			std::cout << "module name is ";
-			file_name->print();
+			module_name->print();
 			std::cout << std::endl;
 		}
 };

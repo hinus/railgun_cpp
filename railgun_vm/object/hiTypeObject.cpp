@@ -1,7 +1,7 @@
 #ifndef _HI_TYPE_OBJECT_HPP
 #define _HI_TYPE_OBJECT_HPP
 
-#include "Object/hiObject.hpp"
+#include "object/hiObject.hpp"
 
 class HiTypeObject : public HiObject {
 };

@@ -26,10 +26,10 @@ public:
     }
 
     int read_int() {
-        int b1 = read();
-        int b2 = read();
-        int b3 = read();
-        int b4 = read();
+        int b1 = read() & 0xff;
+        int b2 = read() & 0xff;
+        int b3 = read() & 0xff;
+        int b4 = read() & 0xff;
 
         return b4 << 24 | b3 << 16 | b2 << 8 | b1;
     }

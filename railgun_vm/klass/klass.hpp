@@ -26,13 +26,13 @@ public:
 
     virtual void print(HiObject* obj) {}
 
-	virtual HiObject* add(HiObject* x, HiObject* y) { return NULL; }
-    virtual HiObject* sub(HiObject* x, HiObject* y) { return NULL; }
-    virtual HiObject* mul(HiObject* x, HiObject* y) { return NULL; }
-    virtual HiObject* div(HiObject* x, HiObject* y) { return NULL; }
+	virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* sub(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* mul(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* div(HiObject* x, HiObject* y) { return 0; }
 
     // alloacte instances
-    virtual HiObject* allocate_instance() { return NULL; }
+    virtual HiObject* allocate_instance() { return 0; }
 };
 
 #endif

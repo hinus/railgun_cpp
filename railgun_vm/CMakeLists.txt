@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+
 PROJECT(RAILGUN)
 
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -Wall -g -ggdb ")
