@@ -39,11 +39,14 @@ CodeObject* BinaryFileParser::get_code_object() {
 	ArrayList<HiObject*>* free_vars  = get_free_vars();
 	ArrayList<HiObject*>* cell_vars  = get_cell_vars();
 
-	HiString* file_name = get_name();
-	int begin_line_no   = file_stream->read_int();
-	char* lnotab        = get_no_table();
+	HiString* file_name   = get_file_name();
+	HiString* module_name = get_name();
+	int begin_line_no     = file_stream->read_int();
+	char* lnotab          = get_no_table();
 
-    return NULL;
+    return new CodeObject(argcount, nlocals, stacksize, flags, byte_codes,
+		names, consts, var_names, free_vars, cell_vars, file_name, module_name,
+		begin_line_no, lnotab);
 }
 
 HiString* BinaryFileParser::get_string() {
@@ -83,7 +86,6 @@ char* BinaryFileParser::get_byte_codes() {
     assert(file_stream->read() == 's');
 
     int length = file_stream->read_int();
-    std::cout << "code length is " << length << std::endl;
     char* code = new char[length];
 
     for (int i = 0; i < length; i++) {
@@ -102,7 +104,7 @@ char* BinaryFileParser::get_no_table() {
 	}
 
     int length = file_stream->read_int();
-    std::cout << "lnotable length is " << length << std::endl;
+    
     char* lnotab = new char[length];
 
     for (int i = 0; i < length; i++) {
