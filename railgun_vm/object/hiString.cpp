@@ -16,6 +16,6 @@ void StringKlass::print(HiObject* obj) {
 	assert(str_obj && str_obj->klass() == (Klass*)this);
 
 	for (int i = 0; i < str_obj->length(); i++) {
-		putchar(str_obj->value()[i]);
+		printf("%c", str_obj->value()[i]);
 	}
 }

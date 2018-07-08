@@ -28,7 +28,9 @@ public:
 
 	HiString(const char * x, const int length) : 
 		_value(x),
-		_length(length) {}
+		_length(length) {
+			set_klass(StringKlass::get_instance());
+		}
 
 	const char* value() {return _value;}
 	int length()  {return _length;}

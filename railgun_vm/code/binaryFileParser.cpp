@@ -57,7 +57,7 @@ HiString* BinaryFileParser::get_string() {
 		str_value[i] = file_stream->read();
 	}
 
-	return new HiString(str_value);
+	return new HiString(str_value, length);
 }
 
 HiString* BinaryFileParser::get_name() {
