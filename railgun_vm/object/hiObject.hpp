@@ -2,6 +2,7 @@
 #define _HI_OBJECT_HPP
 
 #include "klass/klass.hpp"
+#include <stdint.h>
 
 class HiObject {
 private:

@@ -1,4 +1,4 @@
-#include "Object/hiInteger.hpp"
+#include "object/hiInteger.hpp"
 
 HiInteger::HiInteger(int x) {
     _value = x;

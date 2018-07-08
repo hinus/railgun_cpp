@@ -7,7 +7,7 @@
 
 
 int main(int argc, char** argv) {
-    BufferedInputStream input_stream("test.pyc");
+    BufferedInputStream input_stream(argv[1]);
 	BinaryFileParser parser(&input_stream);
 	Interpreter interpreter;
 

@@ -1,7 +1,7 @@
 #ifndef INTERPRETER_HPP
 #define INTERPRETER_HPP
 
-#include "code/byteCode.hpp"
+#include "code/bytecode.hpp"
 #include "code/codeObject.hpp"
 #include "util/stack.hpp"
 
