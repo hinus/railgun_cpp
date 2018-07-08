@@ -86,11 +86,12 @@ char* BinaryFileParser::get_byte_codes() {
     assert(file_stream->read() == 's');
 
     int length = file_stream->read_int();
-    char* code = new char[length];
+    char* code = new char[length + 1];
 
     for (int i = 0; i < length; i++) {
         code[i] = file_stream->read();
     }
+	code[length] = '\0';
 
     return code;
 }
@@ -105,11 +106,12 @@ char* BinaryFileParser::get_no_table() {
 
     int length = file_stream->read_int();
     
-    char* lnotab = new char[length];
+    char* lnotab = new char[length + 1];
 
     for (int i = 0; i < length; i++) {
         lnotab[i] = file_stream->read();
     }
+	lnotab[length] = '\0';
 
     return lnotab;
 }

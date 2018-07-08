@@ -3,18 +3,16 @@
 #include "util/bufferedInputStream.hpp"
 #include "code/binaryFileParser.hpp"
 #include "code/codeObject.hpp"
-//#include "Object/hiInteger.hpp"
-//#include "Object/hiString.hpp"
-//#include "Object/hiObject.hpp"
-//#include "Util/stack.hpp"
+#include "code/interpreter.hpp"
 
-//#include "VirtualMachine/op.hpp"
-//#include "VirtualMachine/universe.hpp"
 
 int main(int argc, char** argv) {
     BufferedInputStream input_stream("test.pyc");
 	BinaryFileParser parser(&input_stream);
-	CodeObject* pMainCode = parser.parse();
+	Interpreter interpreter;
+
+	interpreter.run(parser.parse());
+
 	return 0;
 }
 /*

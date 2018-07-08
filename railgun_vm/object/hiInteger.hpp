@@ -3,12 +3,24 @@
 
 #include "hiObject.hpp"
 
+class IntegerKlass : public Klass {
+private:
+	IntegerKlass() {}
+	static IntegerKlass* instance;
+
+public:
+	static IntegerKlass* get_instance();
+
+	virtual void print(HiObject* obj);
+};
+
+
 class HiInteger : public HiObject {
 private:
     int _value;
 
 public:
-	HiInteger(int x) : _value(x) {};
+	HiInteger(int x);
 
     int value() { return _value; }
 

@@ -13,6 +13,8 @@ public:
 
     Klass* klass()             { return _klass; }
     void set_klass(Klass* x)   { _klass = x; }
+
+	void print();
 };
 
 #endif

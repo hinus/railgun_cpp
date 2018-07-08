@@ -29,4 +29,7 @@ public:
     }
 };
 
+class HiObject;
+template Stack<HiObject*>;
+
 #endif
