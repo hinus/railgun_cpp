@@ -5,7 +5,7 @@
 
 class HiObject {
 private:
-    uintptr_t _mark_word;
+    long _mark_word;
     Klass* _klass;
 
 public:

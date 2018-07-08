@@ -45,7 +45,7 @@ CodeObject* BinaryFileParser::get_code_object() {
 	char* lnotab          = get_no_table();
 
     return new CodeObject(argcount, nlocals, stacksize, flags, byte_codes,
-		names, consts, var_names, free_vars, cell_vars, file_name, module_name,
+		consts, names, var_names, free_vars, cell_vars, file_name, module_name,
 		begin_line_no, lnotab);
 }
 
