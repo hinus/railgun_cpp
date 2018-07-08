@@ -34,6 +34,10 @@ public:
         return b4 << 24 | b3 << 16 | b2 << 8 | b1;
     }
 
+	void unread() {
+		index--;
+	}
+
     void close() {
         inputStream.close();
     }

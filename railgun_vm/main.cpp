@@ -12,7 +12,7 @@
 //#include "VirtualMachine/universe.hpp"
 
 int main(int argc, char** argv) {
-    BufferedInputStream input_stream(argv[1]);
+    BufferedInputStream input_stream("test.pyc");
 	BinaryFileParser parser(&input_stream);
 	CodeObject* pMainCode = parser.parse();
 	return 0;

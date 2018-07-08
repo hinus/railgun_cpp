@@ -1,12 +1,14 @@
 #ifndef _KLASS_HPP
 #define _KLASS_HPP
 
+#include <stdio.h>
+
 enum vm_type {
     TYPE_INT = 0,
     TYPE_STRING,
     TYPE_OBJECT,
     TYPE_TYPE,
-}
+};
 
 class HiTypeObject;
 class HiObject;
@@ -24,13 +26,13 @@ public:
 
     virtual void print(HiObject* obj) {}
 
-    virtual HiObject* add(HiObject* x, HiObject* y) {}
-    virtual HiObject* sub(HiObject* x, HiObject* y) {}
-    virtual HiObject* mul(HiObject* x, HiObject* y) {}
-    virtual HiObject* div(HiObject* x, HiObject* y) {}
+    virtual HiObject* add(HiObject* x, HiObject* y) { return NULL; }
+    virtual HiObject* sub(HiObject* x, HiObject* y) { return NULL; }
+    virtual HiObject* mul(HiObject* x, HiObject* y) { return NULL; }
+    virtual HiObject* div(HiObject* x, HiObject* y) { return NULL; }
 
     // alloacte instances
-    virtual HiObject* allocate_instance() {}
+    virtual HiObject* allocate_instance() { return NULL; }
 };
 
 #endif
