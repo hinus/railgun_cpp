@@ -13,6 +13,7 @@ public:
 
     void add(T t);
 	T    get(int index);
+    void set(int index, T t);
 };
 
 #endif

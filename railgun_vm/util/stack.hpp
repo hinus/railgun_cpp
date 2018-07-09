@@ -7,7 +7,7 @@ private:
     V* vector;
     int _len;
 public:
-    Stack(int n) {
+    Stack(int n = 16) {
         vector = new V[n];
         _len = 0;
     }

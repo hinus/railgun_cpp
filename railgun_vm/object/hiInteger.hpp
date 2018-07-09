@@ -12,6 +12,19 @@ public:
 	static IntegerKlass* get_instance();
 
 	virtual void print(HiObject* obj);
+
+    virtual HiObject* greater  (HiObject* x, HiObject* y);
+    virtual HiObject* less     (HiObject* x, HiObject* y);
+    virtual HiObject* equal    (HiObject* x, HiObject* y);
+    virtual HiObject* not_equal(HiObject* x, HiObject* y);
+    virtual HiObject* ge       (HiObject* x, HiObject* y);
+    virtual HiObject* le       (HiObject* x, HiObject* y);
+
+    virtual HiObject* add(HiObject* x, HiObject* y);
+    virtual HiObject* sub(HiObject* x, HiObject* y);
+    virtual HiObject* mul(HiObject* x, HiObject* y);
+    virtual HiObject* div(HiObject* x, HiObject* y);
+    virtual HiObject* mod(HiObject* x, HiObject* y);
 };
 
 
@@ -23,30 +36,6 @@ public:
 	HiInteger(int x);
 
     int value() { return _value; }
-
-    HiInteger* operator + (HiInteger& right) {
-        return new HiInteger(_value + right._value);
-    }
-
-    HiInteger* operator - (HiInteger& right) {
-        return new HiInteger(_value - right._value);
-    }
-
-    HiInteger* operator * (HiInteger& right) {
-        return new HiInteger(_value * right._value);
-    }
-
-    HiInteger* operator / (HiInteger& right) {
-        return new HiInteger(_value / right._value);
-    }
-
-    bool operator == (HiInteger& right) {
-        return _value == right._value;
-    }
-
-    bool operator < (HiInteger& right) {
-        return _value < right._value;
-    }
 };
 
 #endif

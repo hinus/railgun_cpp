@@ -17,6 +17,11 @@ T ArrayList<T>::get(int index) {
     return _array[index];
 }
 
+template <typename T>
+void ArrayList<T>::set(int index, T t) {
+    _array[index] = t;
+}
+
 class HiObject;
 template class ArrayList<HiObject*>;
 

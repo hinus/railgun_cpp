@@ -8,6 +8,8 @@
 #include "object/hiString.hpp"
 
 class CodeObject : public HiObject {
+friend class FunctionObject;
+
 public:
 	int _argcount;
 	int _nlocals;
@@ -22,7 +24,7 @@ public:
 	ArrayList<HiObject*>*  _free_vars;
 	ArrayList<HiObject*>*  _cell_vars;
 
-	HiString* _module_name;
+	HiString* _co_name;
 	HiString* _file_name;
 
 	int _lineno;
@@ -31,7 +33,7 @@ public:
 	CodeObject(int argcount, int nlocals, int stacksize, int flag, HiString* bytecodes,
                       ArrayList<HiObject*>* consts, ArrayList<HiObject*>* names, ArrayList<HiObject*>* varnames, 
 					  ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
-					  HiString* file_name, HiString* module_name, int lineno, char* notable):
+					  HiString* file_name, HiString* co_name, int lineno, char* notable):
 		_argcount(argcount),
 		_nlocals(nlocals),
 		_stack_size(stacksize),
@@ -43,17 +45,9 @@ public:
 		_free_vars(freevars),
 		_cell_vars(cellvars),
 		_file_name(file_name),
-		_module_name(module_name),
+		_co_name(co_name),
 		_lineno(lineno),
 		_notable(notable){
-			//std::cout << "lnotable length is " << strlen(notable) << std::endl;
-			std::cout << "file name is ";
-			file_name->print();
-			std::cout << std::endl;
-
-			std::cout << "module name is ";
-			module_name->print();
-			std::cout << std::endl;
 		}
 };
 

@@ -26,10 +26,18 @@ public:
 
     virtual void print(HiObject* obj) {}
 
+    virtual HiObject* greater  (HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* less     (HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* equal    (HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* not_equal(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* ge       (HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* le       (HiObject* x, HiObject* y) { return 0; }
+
 	virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* sub(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* mul(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* div(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* mod(HiObject* x, HiObject* y) { return 0; }
 
     // alloacte instances
     virtual HiObject* allocate_instance() { return 0; }

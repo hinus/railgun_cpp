@@ -15,6 +15,18 @@ public:
     void set_klass(Klass* x)   { _klass = x; }
 
 	void print();
+    HiObject* greater  (HiObject* x);
+    HiObject* less     (HiObject* x);
+    HiObject* equal    (HiObject* x);
+    HiObject* not_equal(HiObject* x);
+    HiObject* ge       (HiObject* x);
+    HiObject* le       (HiObject* x);
+
+    HiObject* add(HiObject* x);
+    HiObject* sub(HiObject* x);
+    HiObject* mul(HiObject* x);
+    HiObject* div(HiObject* x);
+    HiObject* mod(HiObject* x);
 };
 
 #endif
