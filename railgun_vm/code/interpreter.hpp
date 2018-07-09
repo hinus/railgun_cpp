@@ -16,16 +16,18 @@ private:
 	ArrayList<HiObject*>* _globals_table;
     FrameObject*          _top_frame;
     CodeObject*           _codes;
+	const char*           _bytecodes;
+	int                   _code_length;
     int                   _pc;
 
 public:
 	Interpreter() {};
 
 	void      run        (CodeObject* codes);
-	HiObject* call       (FunctionObject* func);
-    void      eval_frame (FrameObject* frame);
+	void      call_func  (FunctionObject* func, ArrayList<HiObject*>* args);
+	void      enter_frame(FrameObject* frame);
     void      eval_code  ();
-    void      remove_last_frame(int &length, const char*& code_value);
+    HiObject* leave_last_frame();
 };
 
 #endif

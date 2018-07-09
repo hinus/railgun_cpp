@@ -13,6 +13,16 @@ void ArrayList<T>::add(T t) {
 }
 
 template <typename T>
+int ArrayList<T>::size() {
+    return _size;
+}
+
+template <typename T>
+int ArrayList<T>::length() {
+    return _length;
+}
+
+template <typename T>
 T ArrayList<T>::get(int index) {
     return _array[index];
 }

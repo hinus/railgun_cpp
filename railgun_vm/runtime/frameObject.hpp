@@ -5,10 +5,14 @@
 #include "code/codeObject.hpp"
 #include "util/stack.hpp"
 #include "util/arrayList.hpp"
+#include "runtime/functionObject.hpp"
 
 class FrameObject : public HiObject {
 public:
-    FrameObject(CodeObject* codes, ArrayList<HiObject*>* globals);
+    FrameObject(CodeObject* codes, ArrayList<HiObject*>* globals, 
+			ArrayList<HiObject*>* locals);
+
+	FrameObject(FunctionObject* func, ArrayList<HiObject*>* args);
 
     ArrayList<HiObject*>* _consts;
     ArrayList<HiObject*>* _globals;

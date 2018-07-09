@@ -5,79 +5,79 @@
 
 void Interpreter::run(CodeObject* codes) {
     FrameObject* frame = new FrameObject(codes, 
-        new ArrayList<HiObject*>(codes->_nlocals));
+        new ArrayList<HiObject*>(codes->_nlocals), 
+        NULL);
 
     _top_frame = NULL;
-    eval_frame(frame);
+    enter_frame(frame);
+    eval_code();
 }
 
-HiObject* Interpreter::call(FunctionObject* func) {
-    CodeObject* codes = func->_func_code;
-    FrameObject* frame = new FrameObject(codes, func->_globals);
-
-    eval_frame(frame);
-    return frame->_ret_value;
+void Interpreter::call_func(FunctionObject* func, ArrayList<HiObject*>* args) {
+    FrameObject* frame = new FrameObject(func, args);
+    enter_frame(frame);
 }
 
-void Interpreter::eval_frame(FrameObject* frame) {
-	_stack         = frame->_stack;
-	_loop_stack    = frame->_loop_stack;
-	_locals_table  = frame->_locals;
-	_consts        = frame->_consts;
+void Interpreter::enter_frame(FrameObject* frame) {
+    _stack         = frame->_stack;
+    _loop_stack    = frame->_loop_stack;
+    _locals_table  = frame->_locals;
+    _consts        = frame->_consts;
     _globals_table = frame->_globals;
 
     frame->set_sender(_top_frame);
     _top_frame     = frame;
 
-    _codes          = frame->_codes;
+    _codes         = frame->_codes;
     _pc            = 0;
-
-    eval_code();
+    _code_length   = _codes->_bytecodes->length();
+    _bytecodes     = _codes->_bytecodes->value();
 }
 
-void Interpreter::remove_last_frame(int &code_length, const char *& bytecodes) {
+HiObject* Interpreter::leave_last_frame() {
     if (!_top_frame->sender()) {
         delete _top_frame;
         _top_frame = NULL;
-        return;
+        return NULL;
     }
 
     FrameObject* temp = _top_frame;
+    HiObject* result  = temp->_ret_value;
     _top_frame     = _top_frame->sender();
     _codes         = _top_frame->_codes;
     _pc            = _top_frame->get_pc();
+    _code_length   = _codes->_bytecodes->length();
+    _bytecodes     = _codes->_bytecodes->value();
 
-	_stack         = _top_frame->_stack;
-	_loop_stack    = _top_frame->_loop_stack;
-	_locals_table  = _top_frame->_locals;
-	_consts        = _top_frame->_consts;
+    _stack         = _top_frame->_stack;
+    _loop_stack    = _top_frame->_loop_stack;
+    _locals_table  = _top_frame->_locals;
+    _consts        = _top_frame->_consts;
     _globals_table = _top_frame->_globals;
 
-    code_length = _codes->_bytecodes->length();
-    bytecodes   = _codes->_bytecodes->value();
 
     delete temp;
+    return result;
 }
 
 void Interpreter::eval_code() {
-	_pc = 0;
-	int code_length = _codes->_bytecodes->length();
-	const char* bytecodes = _codes->_bytecodes->value();
-	bool x86 = false;
+    _pc = 0;
+    bool x86 = false;
+    HiObject* v, * w, * u, * attr;
+    FunctionObject* fo;
+    ArrayList<HiObject*>* args = NULL;
 
-	while (_pc < code_length) {
-		unsigned char op_code = bytecodes[_pc++];
-		bool has_argument = (op_code & 0xFF) >= ByteCode::HAVE_ARGUMENT;
+    while (_pc < _code_length) {
+    	unsigned char op_code = _bytecodes[_pc++];
+    	bool has_argument = (op_code & 0xFF) >= ByteCode::HAVE_ARGUMENT;
 
-		int op_arg = -1;
-		if (has_argument) {
-            op_arg = x86 ? (bytecodes[_pc++] & 0xFF) : 
-		        ((bytecodes[_pc++] & 0xFF) + ((bytecodes[_pc++] & 0xFF) << 8));
+    	int op_arg = -1;
+    	if (has_argument) {
+            op_arg = x86 ? (_bytecodes[_pc++] & 0xFF) : 
+    	        ((_bytecodes[_pc++] & 0xFF) + ((_bytecodes[_pc++] & 0xFF) << 8));
         }
 
-        HiObject* v, * w, * u, * attr;
-
-		switch (op_code) {
+    	switch (op_code) {
             case ByteCode::POP_TOP:
                 _stack->pop();
                 break;
@@ -98,30 +98,38 @@ void Interpreter::eval_code() {
                 _stack->push(w);
                 break;
 
-			case ByteCode::LOAD_CONST:
-				_stack->push(_consts->get(op_arg));
+    		case ByteCode::LOAD_CONST:
+    			_stack->push(_consts->get(op_arg));
+                break;
+
+            case ByteCode::LOAD_FAST:
+                _stack->push(_locals_table->get(op_arg));
                 break;
 
             case ByteCode::LOAD_GLOBAL:
-			case ByteCode::LOAD_NAME:
-				_stack->push(_globals_table->get(op_arg));
+    		case ByteCode::LOAD_NAME:
+    			_stack->push(_globals_table->get(op_arg));
                 break;
 
-			case ByteCode::PRINT_ITEM:
-				v = _stack->pop();
-				v->print();
-				break;
+    		case ByteCode::PRINT_ITEM:
+    			v = _stack->pop();
+    			v->print();
+    			break;
 
-			case ByteCode::PRINT_NEWLINE:
-				printf("\n");
-				break;
+    		case ByteCode::PRINT_NEWLINE:
+    			printf("\n");
+    			break;
+
+            case ByteCode::STORE_FAST:
+                _locals_table->set(op_arg, _stack->pop());
+                break;
 
             case ByteCode::STORE_GLOBAL:
-			case ByteCode::STORE_NAME:
+    		case ByteCode::STORE_NAME:
                 _globals_table->set(op_arg, _stack->pop());
-				break;
+    			break;
 
-			case ByteCode::COMPARE_OP:
+    		case ByteCode::COMPARE_OP:
                 w = _stack->pop();
                 v = _stack->pop();
 
@@ -177,7 +185,7 @@ void Interpreter::eval_code() {
                 
             case ByteCode::RETURN_VALUE:
                 _top_frame->_ret_value = _stack->pop(); 
-                remove_last_frame(code_length, bytecodes);
+                _stack->push(leave_last_frame());
                 break;
 
             case ByteCode::INPLACE_ADD: // drop down
@@ -217,18 +225,44 @@ void Interpreter::eval_code() {
 
             case ByteCode::MAKE_FUNCTION:
                 v = _stack->pop();
-                _stack->push(new FunctionObject(v, _globals_table));
+				fo = new FunctionObject(v, _globals_table);
+				if (op_arg > 0) {
+    				args = new ArrayList<HiObject*>(op_arg);
+					while (op_arg--) {
+						args->set(op_arg, _stack->pop());
+					}
+				}
+				fo->set_default(args);
+
+				if (args != NULL) {
+					delete args;
+					args = NULL;
+				}
+
+                _stack->push(fo);
                 break;
 
             case ByteCode::CALL_FUNCTION:
-                v = _stack->pop();
                 _top_frame->set_pc(_pc);
-                _stack->push(call((FunctionObject*)v));
+				if (op_arg > 0) {
+    				args = new ArrayList<HiObject*>(op_arg);
+					while (op_arg--) {
+						args->set(op_arg, _stack->pop());
+					}
+				}
+
+                v = _stack->pop();
+    			fo = (FunctionObject*) v;
+                call_func(fo, args);
+				if (args != NULL) {
+				   	delete args;
+					args = NULL;
+				}
                 break;
 
-			default:
-				// do nothing
-				break;
-		}
-	}
+    		default:
+    			// do nothing
+    			break;
+    	}
+    }
 }
