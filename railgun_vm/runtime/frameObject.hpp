@@ -10,11 +10,13 @@
 class FrameObject : public HiObject {
 public:
     FrameObject(CodeObject* codes, ArrayList<HiObject*>* globals, 
-			ArrayList<HiObject*>* locals);
+            ArrayList<HiObject*>* locals);
 
-	FrameObject(FunctionObject* func, ArrayList<HiObject*>* args);
+    FrameObject(FunctionObject* func, ArrayList<HiObject*>* args);
 
     ArrayList<HiObject*>* _consts;
+    ArrayList<HiObject*>* _names;
+
     ArrayList<HiObject*>* _globals;
     ArrayList<HiObject*>* _locals;
 

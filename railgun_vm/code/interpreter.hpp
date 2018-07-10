@@ -9,23 +9,24 @@
 
 class Interpreter {
 private:
-	Stack<HiObject*>*     _stack;
-	Stack<int>*           _loop_stack;
-	ArrayList<HiObject*>* _consts;
-	ArrayList<HiObject*>* _locals_table;
-	ArrayList<HiObject*>* _globals_table;
+    Stack<HiObject*>*     _stack;
+    Stack<int>*           _loop_stack;
+    ArrayList<HiObject*>* _consts;
+    ArrayList<HiObject*>* _names;
+    ArrayList<HiObject*>* _locals_table;
+    ArrayList<HiObject*>* _globals_table;
     FrameObject*          _top_frame;
     CodeObject*           _codes;
-	const char*           _bytecodes;
-	int                   _code_length;
+    const char*           _bytecodes;
+    int                   _code_length;
     int                   _pc;
 
 public:
-	Interpreter() {};
+    Interpreter() {};
 
-	void      run        (CodeObject* codes);
-	void      call_func  (FunctionObject* func, ArrayList<HiObject*>* args);
-	void      enter_frame(FrameObject* frame);
+    void      run        (CodeObject* codes);
+    void      call_func  (MethodObject* func, ArrayList<HiObject*>* args);
+    void      enter_frame(FrameObject* frame);
     void      eval_code  ();
     HiObject* leave_last_frame();
 };

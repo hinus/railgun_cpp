@@ -62,14 +62,13 @@ HiObject* HiObject::not_equal(HiObject * rhs) {
 }
 
 HiObject* HiObject::ge(HiObject * rhs) {
-	assert(_klass != NULL);
-
-	return _klass->ge(this, rhs);
+	return klass()->ge(this, rhs);
 }
 
 HiObject* HiObject::le(HiObject * rhs) {
-	assert(_klass != NULL);
-
-	return _klass->le(this, rhs);
+	return klass()->le(this, rhs);
 }
 
+HiObject* HiObject::getattr(HiObject* x) {
+    return klass()->getattr(this, (HiString*)x);
+}

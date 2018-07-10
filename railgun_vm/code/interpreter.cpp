@@ -1,5 +1,6 @@
 #include "code/interpreter.hpp"
 #include "object/hiInteger.hpp"
+#include "object/hiList.hpp"
 
 #include <assert.h>
 
@@ -13,9 +14,17 @@ void Interpreter::run(CodeObject* codes) {
     eval_code();
 }
 
-void Interpreter::call_func(FunctionObject* func, ArrayList<HiObject*>* args) {
-    FrameObject* frame = new FrameObject(func, args);
-    enter_frame(frame);
+void Interpreter::call_func(MethodObject* method, ArrayList<HiObject*>* args) {
+    if (method->native_func()) {
+        HiObject* result = (*method->native_func())(method->owner(), args);
+        // we do not create a virtual frame, but native frame.
+        _stack->push(result);
+        return;
+    }
+    else {
+        FrameObject* frame = new FrameObject(method->func(), args);
+        enter_frame(frame);
+    }
 }
 
 void Interpreter::enter_frame(FrameObject* frame) {
@@ -23,6 +32,7 @@ void Interpreter::enter_frame(FrameObject* frame) {
     _loop_stack    = frame->_loop_stack;
     _locals_table  = frame->_locals;
     _consts        = frame->_consts;
+    _names         = frame->_names;
     _globals_table = frame->_globals;
 
     frame->set_sender(_top_frame);
@@ -53,8 +63,8 @@ HiObject* Interpreter::leave_last_frame() {
     _loop_stack    = _top_frame->_loop_stack;
     _locals_table  = _top_frame->_locals;
     _consts        = _top_frame->_consts;
+    _names         = _top_frame->_names;
     _globals_table = _top_frame->_globals;
-
 
     delete temp;
     return result;
@@ -68,16 +78,16 @@ void Interpreter::eval_code() {
     ArrayList<HiObject*>* args = NULL;
 
     while (_pc < _code_length) {
-    	unsigned char op_code = _bytecodes[_pc++];
-    	bool has_argument = (op_code & 0xFF) >= ByteCode::HAVE_ARGUMENT;
+        unsigned char op_code = _bytecodes[_pc++];
+        bool has_argument = (op_code & 0xFF) >= ByteCode::HAVE_ARGUMENT;
 
-    	int op_arg = -1;
-    	if (has_argument) {
+        int op_arg = -1;
+        if (has_argument) {
             op_arg = x86 ? (_bytecodes[_pc++] & 0xFF) : 
-    	        ((_bytecodes[_pc++] & 0xFF) + ((_bytecodes[_pc++] & 0xFF) << 8));
+                ((_bytecodes[_pc++] & 0xFF) + ((_bytecodes[_pc++] & 0xFF) << 8));
         }
 
-    	switch (op_code) {
+        switch (op_code) {
             case ByteCode::POP_TOP:
                 _stack->pop();
                 break;
@@ -98,8 +108,16 @@ void Interpreter::eval_code() {
                 _stack->push(w);
                 break;
 
-    		case ByteCode::LOAD_CONST:
-    			_stack->push(_consts->get(op_arg));
+            case ByteCode::BUILD_LIST:
+                v = new HiList();
+                while (op_arg--) {
+                    ((HiList*)v)->inner_list()->add(_stack->pop());
+                }
+                _stack->push(v); 
+                break;
+
+            case ByteCode::LOAD_CONST:
+                _stack->push(_consts->get(op_arg));
                 break;
 
             case ByteCode::LOAD_FAST:
@@ -107,29 +125,35 @@ void Interpreter::eval_code() {
                 break;
 
             case ByteCode::LOAD_GLOBAL:
-    		case ByteCode::LOAD_NAME:
-    			_stack->push(_globals_table->get(op_arg));
+            case ByteCode::LOAD_NAME:
+                _stack->push(_globals_table->get(op_arg));
                 break;
 
-    		case ByteCode::PRINT_ITEM:
-    			v = _stack->pop();
-    			v->print();
-    			break;
+            case ByteCode::LOAD_ATTR:
+                v = _stack->pop();
+                w = _names->get(op_arg);
+                _stack->push(v->getattr(w));
+                break;
 
-    		case ByteCode::PRINT_NEWLINE:
-    			printf("\n");
-    			break;
+            case ByteCode::PRINT_ITEM:
+                v = _stack->pop();
+                v->print();
+                break;
+
+            case ByteCode::PRINT_NEWLINE:
+                printf("\n");
+                break;
 
             case ByteCode::STORE_FAST:
                 _locals_table->set(op_arg, _stack->pop());
                 break;
 
             case ByteCode::STORE_GLOBAL:
-    		case ByteCode::STORE_NAME:
+            case ByteCode::STORE_NAME:
                 _globals_table->set(op_arg, _stack->pop());
-    			break;
+                break;
 
-    		case ByteCode::COMPARE_OP:
+            case ByteCode::COMPARE_OP:
                 w = _stack->pop();
                 v = _stack->pop();
 
@@ -225,44 +249,42 @@ void Interpreter::eval_code() {
 
             case ByteCode::MAKE_FUNCTION:
                 v = _stack->pop();
-				fo = new FunctionObject(v, _globals_table);
-				if (op_arg > 0) {
-    				args = new ArrayList<HiObject*>(op_arg);
-					while (op_arg--) {
-						args->set(op_arg, _stack->pop());
-					}
-				}
-				fo->set_default(args);
+                fo = new FunctionObject(v, _globals_table);
+                if (op_arg > 0) {
+                    args = new ArrayList<HiObject*>(op_arg);
+                    while (op_arg--) {
+                        args->set(op_arg, _stack->pop());
+                    }
+                }
+                fo->set_default(args);
 
-				if (args != NULL) {
-					delete args;
-					args = NULL;
-				}
+                if (args != NULL) {
+                    delete args;
+                    args = NULL;
+                }
 
                 _stack->push(fo);
                 break;
 
             case ByteCode::CALL_FUNCTION:
                 _top_frame->set_pc(_pc);
-				if (op_arg > 0) {
-    				args = new ArrayList<HiObject*>(op_arg);
-					while (op_arg--) {
-						args->set(op_arg, _stack->pop());
-					}
-				}
+                if (op_arg > 0) {
+                    args = new ArrayList<HiObject*>(op_arg);
+                    while (op_arg--) {
+                        args->set(op_arg, _stack->pop());
+                    }
+                }
 
-                v = _stack->pop();
-    			fo = (FunctionObject*) v;
-                call_func(fo, args);
-				if (args != NULL) {
-				   	delete args;
-					args = NULL;
-				}
+                call_func((MethodObject*)_stack->pop(), args);
+                if (args != NULL) {
+                    delete args;
+                    args = NULL;
+                }
                 break;
 
-    		default:
-    			// do nothing
-    			break;
-    	}
+            default:
+                // do nothing
+                break;
+        }
     }
 }

@@ -4,6 +4,7 @@
 #include "klass/klass.hpp"
 
 class HiInteger;
+class HiNoneObject;
 
 class Universe {
 public:
@@ -13,6 +14,8 @@ public:
 
     static HiInteger* HiTrue;
     static HiInteger* HiFalse;
+
+	static HiNoneObject* HiNone;
 
 public:
     static void genesis();

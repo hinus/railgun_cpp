@@ -2,6 +2,7 @@
 #define _HI_STRING_HPP
 
 #include "hiObject.hpp"
+#include <string.h>
 
 class StringKlass : public Klass {
 private:
@@ -10,6 +11,8 @@ private:
 
 public:
 	static StringKlass* get_instance();
+
+    virtual HiObject* equal    (HiObject* x, HiObject* y);
 
 	virtual void print(HiObject* obj);
 };
@@ -21,8 +24,8 @@ private:
 
 public:
     HiString(const char * x) : 
-        _value(x),
-		_length(0) {
+        _value(x) {
+            _length = strlen(x);
 			set_klass(StringKlass::get_instance());
 		}
 

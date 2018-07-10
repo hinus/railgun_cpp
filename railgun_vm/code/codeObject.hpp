@@ -11,44 +11,44 @@ class CodeObject : public HiObject {
 friend class FunctionObject;
 
 public:
-	int _argcount;
-	int _nlocals;
-	int _stack_size;
-	int _flag;
+    int _argcount;
+    int _nlocals;
+    int _stack_size;
+    int _flag;
 
-	HiString* _bytecodes;
-	ArrayList<HiObject*>*  _names;
-	ArrayList<HiObject*>*  _consts;
-	ArrayList<HiObject*>*  _var_names;
+    HiString* _bytecodes;
+    ArrayList<HiObject*>*  _names;
+    ArrayList<HiObject*>*  _consts;
+    ArrayList<HiObject*>*  _var_names;
 
-	ArrayList<HiObject*>*  _free_vars;
-	ArrayList<HiObject*>*  _cell_vars;
+    ArrayList<HiObject*>*  _free_vars;
+    ArrayList<HiObject*>*  _cell_vars;
 
-	HiString* _co_name;
-	HiString* _file_name;
+    HiString* _co_name;
+    HiString* _file_name;
 
-	int _lineno;
-	char* _notable;
+    int _lineno;
+    char* _notable;
 
-	CodeObject(int argcount, int nlocals, int stacksize, int flag, HiString* bytecodes,
+    CodeObject(int argcount, int nlocals, int stacksize, int flag, HiString* bytecodes,
                       ArrayList<HiObject*>* consts, ArrayList<HiObject*>* names, ArrayList<HiObject*>* varnames, 
-					  ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
-					  HiString* file_name, HiString* co_name, int lineno, char* notable):
-		_argcount(argcount),
-		_nlocals(nlocals),
-		_stack_size(stacksize),
-		_flag(flag),
-		_bytecodes(bytecodes),
-		_consts(consts),
-		_names(names),
-		_var_names(varnames),
-		_free_vars(freevars),
-		_cell_vars(cellvars),
-		_file_name(file_name),
-		_co_name(co_name),
-		_lineno(lineno),
-		_notable(notable){
-		}
+                      ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
+                      HiString* file_name, HiString* co_name, int lineno, char* notable):
+        _argcount(argcount),
+        _nlocals(nlocals),
+        _stack_size(stacksize),
+        _flag(flag),
+        _bytecodes(bytecodes),
+        _consts(consts),
+        _names(names),
+        _var_names(varnames),
+        _free_vars(freevars),
+        _cell_vars(cellvars),
+        _file_name(file_name),
+        _co_name(co_name),
+        _lineno(lineno),
+        _notable(notable){
+        }
 };
 
 #endif
