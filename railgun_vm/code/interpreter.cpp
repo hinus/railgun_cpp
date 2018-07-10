@@ -263,7 +263,7 @@ void Interpreter::eval_code() {
                     args = NULL;
                 }
 
-                _stack->push(fo);
+                _stack->push(new MethodObject(NULL, fo, NULL));
                 break;
 
             case ByteCode::CALL_FUNCTION:
