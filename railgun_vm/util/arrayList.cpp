@@ -23,6 +23,7 @@ void ArrayList<T>::expand() {
         }
         delete[] _array;
         _array = new_array;
+		_length <<= 1;
         printf("expand an array!\n");
     }
 }
