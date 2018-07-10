@@ -18,6 +18,7 @@ ADD_EXECUTABLE(railgun main.cpp
     runtime/nativeFunction.cpp
     util/bufferedInputStream.cpp
     util/arrayList.cpp
+    util/map.cpp
     code/binaryFileParser.cpp
     code/codeObject.cpp
     code/interpreter.cpp)
