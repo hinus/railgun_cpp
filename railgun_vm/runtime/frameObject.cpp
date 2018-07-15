@@ -55,3 +55,7 @@ FrameObject::FrameObject (FunctionObject* func, ArrayList<HiObject*>* args) {
     _sender    = NULL;
 }
 
+FrameObject::~FrameObject() {
+    delete _loop_stack;
+    delete _stack;
+}

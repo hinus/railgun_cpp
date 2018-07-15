@@ -15,7 +15,6 @@ enum vm_type {
 class HiTypeObject;
 class HiObject;
 class HiString;
-class NativeFunction;
 
 typedef Map<HiObject*, HiObject*>* InnerDict;
 
@@ -29,6 +28,7 @@ public:
     static Klass* allocate_instance_klass();
 
     void set_super(Klass* x)              { _super = x; }
+    Klass* super()                        { return _super; }
     void set_type_object(HiTypeObject* x) { _type_object = x; }
     HiTypeObject* type_object()           { return _type_object; }
 
@@ -44,7 +44,7 @@ public:
     virtual HiObject* ge       (HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* le       (HiObject* x, HiObject* y) { return 0; }
 
-	virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* sub(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* mul(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* div(HiObject* x, HiObject* y) { return 0; }
@@ -54,7 +54,7 @@ public:
 
     // alloacte instances
     virtual HiObject* allocate_instance() { return 0; }
-	virtual HiObject* call(ArrayList<HiObject*>* args) { return 0; }
+    virtual HiObject* call(ArrayList<HiObject*>* args) { return 0; }
 };
 
 #endif

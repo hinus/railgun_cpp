@@ -80,7 +80,7 @@ public:
 
 class NativeFunctionKlass : public Klass {
 private:
-	NativeFunctionKlass() {}
+	NativeFunctionKlass();
 	static NativeFunctionKlass* instance;
 
 public:

@@ -3,10 +3,10 @@
 FunctionKlass* FunctionKlass::instance = NULL;
 
 FunctionKlass* FunctionKlass::get_instance() {
-	if (instance == NULL)
-		instance = new FunctionKlass();
+    if (instance == NULL)
+        instance = new FunctionKlass();
 
-	return instance;
+    return instance;
 }
 
 FunctionKlass::FunctionKlass() {
@@ -23,8 +23,7 @@ FunctionObject::FunctionObject(HiObject* code_object,
     _func_name = co->_co_name;
     _globals   = globals;
 
-    _func_name->print();
-    printf("\n");
+    set_klass(FunctionKlass::get_instance());
 }
 
 void FunctionObject::set_default(ArrayList<HiObject*>* defaults) {
@@ -41,7 +40,7 @@ void FunctionObject::set_default(ArrayList<HiObject*>* defaults) {
 }
 
 void FunctionKlass::print(HiObject* obj) {
-	printf("native function : ");
+    printf("native function : ");
     FunctionObject* fo = static_cast<FunctionObject*>(obj);
 
     assert(fo && fo->klass() == (Klass*) this);
@@ -56,10 +55,10 @@ void FunctionKlass::print(HiObject* obj) {
 MethodKlass* MethodKlass::instance = NULL;
 
 MethodKlass* MethodKlass::get_instance() {
-	if (instance == NULL)
-		instance = new MethodKlass();
+    if (instance == NULL)
+        instance = new MethodKlass();
 
-	return instance;
+    return instance;
 }
 
 MethodKlass::MethodKlass() {
@@ -73,31 +72,49 @@ MethodKlass::MethodKlass() {
  * To check the type of a callable object.
  */
 bool MethodObject::is_native(HiObject *x) {
-	if (x->klass() == (Klass*) NativeFunctionKlass::get_instance())
-		return true;
+    Klass* k = x->klass();
+    if (k == (Klass*) NativeFunctionKlass::get_instance())
+        return true;
 
-	return false;
+    while (k->super() != NULL) {
+        k = k->super();
+        if (k == (Klass*) NativeFunctionKlass::get_instance())
+            return true;
+    }
+    return false;
 }
 
 bool MethodObject::is_method(HiObject *x) {
-	if (x->klass() == (Klass*) MethodKlass::get_instance())
-		return true;
+    if (x->klass() == (Klass*) MethodKlass::get_instance())
+        return true;
 
-	return false;
+    return false;
 }
 
 bool MethodObject::is_function(HiObject *x) {
-	if (x->klass() == (Klass*) FunctionKlass::get_instance())
-		return true;
+    Klass* k = x->klass();
+    if (k == (Klass*) FunctionKlass::get_instance())
+        return true;
 
-	return false;
+    while (k->super() != NULL) {
+        k = k->super();
+        if (k == (Klass*) FunctionKlass::get_instance())
+            return true;
+    }
+
+    return false;
 }
 
 NativeFunctionKlass* NativeFunctionKlass::instance = NULL;
 
 NativeFunctionKlass* NativeFunctionKlass::get_instance() {
-	if (instance == NULL)
-		instance = new NativeFunctionKlass();
+    if (instance == NULL)
+        instance = new NativeFunctionKlass();
 
-	return instance;
+    return instance;
 }
+
+NativeFunctionKlass::NativeFunctionKlass() {
+    set_super(FunctionKlass::get_instance());
+}
+

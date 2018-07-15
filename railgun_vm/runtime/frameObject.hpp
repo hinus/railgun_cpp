@@ -13,6 +13,7 @@ public:
             ArrayList<HiObject*>* locals);
 
     FrameObject(FunctionObject* func, ArrayList<HiObject*>* args);
+    ~FrameObject();
 
     ArrayList<HiObject*>* _consts;
     ArrayList<HiObject*>* _names;

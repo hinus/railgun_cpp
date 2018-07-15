@@ -16,16 +16,20 @@ void Interpreter::run(CodeObject* codes) {
 }
 
 void Interpreter::call_func(HiObject* callable, ArrayList<HiObject*>* args) {
-	if (MethodObject::is_native(callable)) {
-		MethodObject* method = (MethodObject*) callable;
-		HiObject* result = method->func()->call((method->owner(), args));
+    if (MethodObject::is_native(callable)) {
+        HiObject* result = ((FunctionObject*)callable)->call(args);
         // we do not create a virtual frame, but native frame.
         _stack->push(result);
         return;
-	}
-	else if (MethodObject::is_method(callable)) {
-	}
-	else if (MethodObject::is_function(callable)) {
+    }
+    else if (MethodObject::is_method(callable)) {
+        MethodObject* method = (MethodObject*) callable;
+        // return value is ignored here, because they are handled
+        // by other pathes.
+        args->insert(0, method->owner());
+        call_func(method->func(), args);
+    }
+    else if (MethodObject::is_function(callable)) {
         FrameObject* frame = new FrameObject((FunctionObject*) callable, args);
         enter_frame(frame);
     }
@@ -50,7 +54,7 @@ void Interpreter::enter_frame(FrameObject* frame) {
 
 HiObject* Interpreter::leave_last_frame() {
     if (!_top_frame->sender()) {
-        delete _top_frame;
+        //delete _top_frame;
         _top_frame = NULL;
         return NULL;
     }
@@ -286,12 +290,13 @@ void Interpreter::eval_code() {
                 _top_frame->set_pc(_pc);
                 if (op_arg > 0) {
                     args = new ArrayList<HiObject*>(op_arg);
+                    args->resize(op_arg);
                     while (op_arg--) {
                         args->set(op_arg, _stack->pop());
                     }
                 }
 
-                call_func((MethodObject*)_stack->pop(), args);
+                call_func(_stack->pop(), args);
                 if (args != NULL) {
                     delete args;
                     args = NULL;

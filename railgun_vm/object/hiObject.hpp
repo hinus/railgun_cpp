@@ -19,6 +19,10 @@ public:
         _obj_dict = new Map<HiObject*, HiObject*>();
     }
 
+	~HiObject() {
+		delete _obj_dict;
+	}
+
     Klass* klass()             { assert(_klass != NULL); return _klass; }
     void set_klass(Klass* x)   { _klass = x; }
 

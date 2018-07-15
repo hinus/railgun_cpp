@@ -5,10 +5,10 @@
 ListKlass* ListKlass::instance = NULL;
 
 ListKlass* ListKlass::get_instance() {
-	if (instance == NULL)
-		instance = new ListKlass();
+    if (instance == NULL)
+        instance = new ListKlass();
 
-	return instance;
+    return instance;
 }
 
 ListKlass::ListKlass() {
@@ -45,12 +45,13 @@ HiList::HiList() {
 ListAppendKlass* ListAppendKlass::instance = NULL;
 
 ListAppendKlass* ListAppendKlass::get_instance() {
-	if (instance == NULL)
-		instance = new ListAppendKlass();
+    if (instance == NULL)
+        instance = new ListAppendKlass();
 
-	return instance;
+    return instance;
 }
 
 HiObject* ListAppendKlass::call(ArgsList args) {
-	return Universe::HiNone;
+    ((HiList*)(args->get(0)))->inner_list()->add(args->get(1));
+    return Universe::HiNone;
 }

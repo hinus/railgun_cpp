@@ -14,10 +14,12 @@ public:
     ArrayList(int n = 8);
 
     void add(T t);
+    void insert(int index, T t);
     T    get(int index);
     void set(int index, T t);
     int  size();
     int  length();
+    void resize(int n);
 };
 
 #endif

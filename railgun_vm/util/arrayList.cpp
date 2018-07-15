@@ -15,6 +15,17 @@ void ArrayList<T>::add(T t) {
 }
 
 template <typename T>
+void ArrayList<T>::insert(int index, T t) {
+    add(NULL);
+
+    for (int i = _size; i > index; i--) {
+        _array[i] = _array[i - 1];
+    }
+
+    _array[index] = t;
+}
+
+template <typename T>
 void ArrayList<T>::expand() {
     if (_size >= _length) {
         T* new_array = new T[_length << 1];
@@ -23,7 +34,7 @@ void ArrayList<T>::expand() {
         }
         delete[] _array;
         _array = new_array;
-		_length <<= 1;
+        _length <<= 1;
         printf("expand an array!\n");
     }
 }
@@ -46,6 +57,14 @@ T ArrayList<T>::get(int index) {
 template <typename T>
 void ArrayList<T>::set(int index, T t) {
     _array[index] = t;
+}
+
+template <typename T>
+void ArrayList<T>::resize(int n) {
+    if (n > _length)
+        return;
+
+    _size = n;
 }
 
 class HiObject;
