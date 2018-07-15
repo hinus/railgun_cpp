@@ -16,7 +16,7 @@ FunctionKlass::FunctionKlass() {
 }
 
 FunctionObject::FunctionObject(HiObject* code_object, 
-    ArrayList<HiObject*>* globals) {
+    NameTable globals) {
     CodeObject* co = (CodeObject*) code_object;
 
     _func_code = co;

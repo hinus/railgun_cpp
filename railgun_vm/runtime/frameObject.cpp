@@ -1,17 +1,13 @@
 #include "runtime/frameObject.hpp"
 
-FrameObject::FrameObject(CodeObject* codes, ArrayList<HiObject*>* globals,
-        ArrayList<HiObject*>* locals) {
+// this constructor is used for module only.
+FrameObject::FrameObject(CodeObject* codes, NameTable globals) {
     _consts  = codes->_consts;
     _names   = codes->_names;
+    
     _globals = globals;
-
-    _locals = new ArrayList<HiObject*>(codes->_nlocals);
-    if (locals) {
-        for (int i = 0; i < locals->length(); i++) {
-            _locals->set(i, locals->get(i));
-        }
-    }
+    _locals  = globals;
+    _fast_locals = new ArrayList<HiObject*>(codes->_nlocals);
 
     _stack  = new Stack<HiObject*>(codes->_stack_size);
     _loop_stack  = new Stack<int>();
@@ -29,20 +25,21 @@ FrameObject::FrameObject (FunctionObject* func, ArrayList<HiObject*>* args) {
     _consts  = _codes->_consts;
     _names   = _codes->_names;
 
-    _locals = new ArrayList<HiObject*>(_codes->_nlocals);
+    _locals = new Map<HiObject*, HiObject*>();
+    _fast_locals = new ArrayList<HiObject*>(_codes->_nlocals);
 
     if (func->_defaults) {
         int dft_cnt = func->_defaults->length();
         int argcnt  = _codes->_argcount;
 
         while (dft_cnt--) {
-            _locals->set(--argcnt, func->_defaults->get(dft_cnt));
+            _fast_locals->set(--argcnt, func->_defaults->get(dft_cnt));
         }
     }
 
     if (args) {
         for (int i = 0; i < args->length(); i++) {
-            _locals->set(i, args->get(i));
+            _fast_locals->set(i, args->get(i));
         }
     }
 

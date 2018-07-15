@@ -4,6 +4,7 @@
 #include "code/bytecode.hpp"
 #include "code/codeObject.hpp"
 #include "util/stack.hpp"
+#include "util/map.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/frameObject.hpp"
 
@@ -13,8 +14,9 @@ private:
     Stack<int>*           _loop_stack;
     ArrayList<HiObject*>* _consts;
     ArrayList<HiObject*>* _names;
-    ArrayList<HiObject*>* _locals_table;
-    ArrayList<HiObject*>* _globals_table;
+    ArrayList<HiObject*>* _fast_locals;
+    NameTable             _locals_table;
+    NameTable             _globals_table;
     FrameObject*          _top_frame;
     CodeObject*           _codes;
     const char*           _bytecodes;

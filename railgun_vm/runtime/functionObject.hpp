@@ -24,11 +24,11 @@ friend class FrameObject;
 private:
     CodeObject* _func_code;
     HiString*   _func_name;
-    ArrayList<HiObject*>* _globals;
+    NameTable   _globals;
     ArrayList<HiObject*>* _defaults;
 
 public:
-    FunctionObject(HiObject* code_object, ArrayList<HiObject*>* globals);
+    FunctionObject(HiObject* code_object, NameTable globals);
     FunctionObject(Klass* klass) {
         _func_code = NULL;
         _func_name = NULL;

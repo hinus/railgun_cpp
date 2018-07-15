@@ -7,8 +7,7 @@
 
 void Interpreter::run(CodeObject* codes) {
     FrameObject* frame = new FrameObject(codes, 
-        new ArrayList<HiObject*>(codes->_nlocals), 
-        NULL);
+        new Map<HiObject*, HiObject*>());
 
     _top_frame = NULL;
     enter_frame(frame);
@@ -39,6 +38,7 @@ void Interpreter::enter_frame(FrameObject* frame) {
     _stack         = frame->_stack;
     _loop_stack    = frame->_loop_stack;
     _locals_table  = frame->_locals;
+    _fast_locals   = frame->_fast_locals;
     _consts        = frame->_consts;
     _names         = frame->_names;
     _globals_table = frame->_globals;
@@ -70,6 +70,7 @@ HiObject* Interpreter::leave_last_frame() {
     _stack         = _top_frame->_stack;
     _loop_stack    = _top_frame->_loop_stack;
     _locals_table  = _top_frame->_locals;
+    _fast_locals   = _top_frame->_fast_locals;
     _consts        = _top_frame->_consts;
     _names         = _top_frame->_names;
     _globals_table = _top_frame->_globals;
@@ -134,12 +135,27 @@ void Interpreter::eval_code() {
                 break;
 
             case ByteCode::LOAD_FAST:
-                _stack->push(_locals_table->get(op_arg));
+                _stack->push(_fast_locals->get(op_arg));
                 break;
 
             case ByteCode::LOAD_GLOBAL:
+                v = _names->get(op_arg);
+                _stack->push(_globals_table->get(v));
+                break;
+
             case ByteCode::LOAD_NAME:
-                _stack->push(_globals_table->get(op_arg));
+                v = _names->get(op_arg);
+                w = _locals_table->get(v);
+                if (w != 0) {
+                    _stack->push(w);
+                    break;
+                }
+
+                w = _globals_table->get(v);
+                if (w != 0) {
+                    _stack->push(w);
+                    break;
+                }
                 break;
 
             case ByteCode::LOAD_ATTR:
@@ -147,6 +163,11 @@ void Interpreter::eval_code() {
                 w = _names->get(op_arg);
                 _stack->push(v->getattr(w));
                 break;
+
+            case ByteCode::LOAD_LOCALS:
+                _stack->push(new HiDict(_locals_table));
+                break;
+
 
             case ByteCode::PRINT_ITEM:
                 v = _stack->pop();
@@ -158,12 +179,17 @@ void Interpreter::eval_code() {
                 break;
 
             case ByteCode::STORE_FAST:
-                _locals_table->set(op_arg, _stack->pop());
+                _fast_locals->set(op_arg, _stack->pop());
                 break;
 
             case ByteCode::STORE_GLOBAL:
+                v = _names->get(op_arg);
+                _globals_table->put(v, _stack->pop());
+                break;
+
             case ByteCode::STORE_NAME:
-                _globals_table->set(op_arg, _stack->pop());
+                v = _names->get(op_arg);
+                _locals_table->put(v, _stack->pop());
                 break;
 
             case ByteCode::STORE_MAP:

@@ -106,4 +106,6 @@ V Map<K, V>::remove(K k) {
     return v;
 }
 
+typedef Map<HiObject*, HiObject*>* NameTable;
+
 #endif

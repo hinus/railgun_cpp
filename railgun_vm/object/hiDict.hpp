@@ -19,10 +19,11 @@ public:
 class HiDict : public HiObject {
 friend class DictKlass;
 private:
-    Map<HiObject*, HiObject*>* _map;
+    NameTable _map;
 
 public:
     HiDict();
+    HiDict(NameTable map);
     Map<HiObject*, HiObject*>* map() { return _map; }
     void put(HiObject* k, HiObject* v) { _map->put(k, v); }
 };

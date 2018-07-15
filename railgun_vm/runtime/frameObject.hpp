@@ -4,13 +4,13 @@
 #include "object/hiObject.hpp"
 #include "code/codeObject.hpp"
 #include "util/stack.hpp"
+#include "util/map.hpp"
 #include "util/arrayList.hpp"
 #include "runtime/functionObject.hpp"
 
 class FrameObject : public HiObject {
 public:
-    FrameObject(CodeObject* codes, ArrayList<HiObject*>* globals, 
-            ArrayList<HiObject*>* locals);
+    FrameObject(CodeObject* codes, NameTable globals);
 
     FrameObject(FunctionObject* func, ArrayList<HiObject*>* args);
     ~FrameObject();
@@ -18,8 +18,9 @@ public:
     ArrayList<HiObject*>* _consts;
     ArrayList<HiObject*>* _names;
 
-    ArrayList<HiObject*>* _globals;
-    ArrayList<HiObject*>* _locals;
+    NameTable             _globals;
+    NameTable             _locals;
+    ArrayList<HiObject*>* _fast_locals;
 
     Stack<HiObject*>*     _stack;
     Stack<int>*           _loop_stack;

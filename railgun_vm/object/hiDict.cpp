@@ -51,3 +51,8 @@ HiDict::HiDict() {
     set_klass(DictKlass::get_instance());
 }
 
+HiDict::HiDict(NameTable x) {
+    _map = x;
+    set_klass(DictKlass::get_instance());
+}
+
