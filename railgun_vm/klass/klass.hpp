@@ -2,6 +2,8 @@
 #define _KLASS_HPP
 
 #include <stdio.h>
+#include "util/map.hpp"
+#include "util/arrayList.hpp"
 
 enum vm_type {
     TYPE_INT = 0,
@@ -13,11 +15,15 @@ enum vm_type {
 class HiTypeObject;
 class HiObject;
 class HiString;
+class NativeFunction;
+
+typedef Map<HiObject*, HiObject*>* InnerDict;
 
 class Klass {
 private:
     Klass* _super;
     HiTypeObject* _type_object;
+    InnerDict _klass_dict;
 
 public:
     static Klass* allocate_instance_klass();
@@ -25,6 +31,9 @@ public:
     void set_super(Klass* x)              { _super = x; }
     void set_type_object(HiTypeObject* x) { _type_object = x; }
     HiTypeObject* type_object()           { return _type_object; }
+
+    void set_klass_dict(InnerDict dict)   { _klass_dict = dict; }
+    InnerDict klass_dict()                { return _klass_dict; }
 
     virtual void print(HiObject* obj) {}
 
@@ -45,6 +54,7 @@ public:
 
     // alloacte instances
     virtual HiObject* allocate_instance() { return 0; }
+	virtual HiObject* call(ArrayList<HiObject*>* args) { return 0; }
 };
 
 #endif

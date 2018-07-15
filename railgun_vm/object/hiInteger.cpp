@@ -54,6 +54,9 @@ HiObject* IntegerKlass::less(HiObject* x, HiObject* y) {
 }
 
 HiObject* IntegerKlass::equal(HiObject* x, HiObject* y) {
+    if (x->klass() != y->klass())
+        return Universe::HiFalse;
+
 	HiInteger* ix = (HiInteger*) x;
 	HiInteger* iy = (HiInteger*) y;
 
@@ -156,4 +159,3 @@ HiObject* IntegerKlass::mod(HiObject* x, HiObject* y) {
 
     return new HiInteger(ix->value() % iy->value());
 }
-

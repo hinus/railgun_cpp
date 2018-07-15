@@ -1,5 +1,5 @@
 #include "object/hiList.hpp"
-#include "object/hiTypeObject.hpp"
+#include "runtime/universe.hpp"
 #include <assert.h>
 
 ListKlass* ListKlass::instance = NULL;
@@ -12,13 +12,11 @@ ListKlass* ListKlass::get_instance() {
 }
 
 ListKlass::ListKlass() {
-    static NativeFunction* methods[] = {
-        new ListAppendMethod(),
-    };
+    set_klass_dict(new Map<HiObject*, HiObject*>());
+    klass_dict()->put(new HiString("append"), 
+        new FunctionObject(ListAppendKlass::get_instance()));
 
     HiTypeObject* list_type_obj = new HiTypeObject();
-    list_type_obj->set_methods(methods, 1);
-
     set_type_object(list_type_obj);
 }
 
@@ -39,22 +37,20 @@ void ListKlass::print(HiObject* x) {
     printf("]");
 }
 
-HiObject* ListKlass::getattr(HiObject* obj, HiString* name) {
-    return type_object()->get_type_attr(obj, name);
-}
-
-
 HiList::HiList() {
     set_klass(ListKlass::get_instance());
     _inner_list = new ArrayList<HiObject*>();
 }
 
-HiObject* ListAppendMethod::operator () (HiObject* x, ArgsList args) {
-    HiList* lx = (HiList*)x;
+ListAppendKlass* ListAppendKlass::instance = NULL;
 
-    assert(args->length() == 1);
-    assert(lx && lx->klass() == (Klass *)ListKlass::get_instance());
-    lx->_inner_list->add(args->get(0));
+ListAppendKlass* ListAppendKlass::get_instance() {
+	if (instance == NULL)
+		instance = new ListAppendKlass();
 
-    return NULL;
+	return instance;
+}
+
+HiObject* ListAppendKlass::call(ArgsList args) {
+	return Universe::HiNone;
 }

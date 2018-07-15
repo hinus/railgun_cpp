@@ -4,7 +4,7 @@
 #include "klass/klass.hpp"
 #include "object/hiString.hpp"
 #include "object/hiObject.hpp"
-#include "runtime/nativeFunction.hpp"
+#include "runtime/functionObject.hpp"
 #include "util/arrayList.hpp"
 
 class ListKlass : public Klass {
@@ -15,13 +15,10 @@ private:
 public:
 	static ListKlass* get_instance();
 
-    virtual HiObject* getattr(HiObject* x, HiString* y);
 	virtual void print(HiObject* obj);
 };
 
 class HiList : public HiObject {
-friend class ListAppendMethod;
-
 friend class ListKlass;
 
 private:
@@ -31,10 +28,19 @@ public:
     ArrayList<HiObject*>* inner_list()  { return _inner_list; }
 };
 
-class ListAppendMethod : public NativeFunction {
+class ListAppendKlass : public Klass {
+private:
+	ListAppendKlass() {
+		set_super(NativeFunctionKlass::get_instance());
+	};
+
+	static ListAppendKlass* instance;
+
 public:
-    ListAppendMethod() : NativeFunction("append") {};
-    virtual HiObject* operator () (HiObject* obj, ArgsList args);
+	static ListAppendKlass* get_instance();
+    
+public:
+    virtual HiObject* call(ArgsList args);
 };
 
 #endif

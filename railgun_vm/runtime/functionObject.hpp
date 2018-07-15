@@ -2,6 +2,20 @@
 #define HI_FUNCTION_OBJECT_HPP
 
 #include "code/codeObject.hpp"
+#include "klass/klass.hpp"
+
+typedef ArrayList<HiObject*>* ArgsList;
+
+class FunctionKlass : public Klass {
+private:
+	FunctionKlass();
+	static FunctionKlass* instance;
+
+public:
+	static FunctionKlass* get_instance();
+
+	virtual void print(HiObject* obj);
+};
 
 class FunctionObject : public HiObject {
 friend class Interpreter;
@@ -15,28 +29,62 @@ private:
 
 public:
     FunctionObject(HiObject* code_object, ArrayList<HiObject*>* globals);
+    FunctionObject(Klass* klass) {
+        _func_code = NULL;
+        _func_name = NULL;
+        _globals   = NULL;
+        _defaults  = NULL;
+
+        set_klass(klass);
+    }
     
-    void set_default(ArrayList<HiObject*>* defaults);
+    void set_default(ArgsList defaults);
+
+	HiString*  func_name()   { return _func_name; }
+	HiObject*  call(ArgsList args)        { return klass()->call(args); }
 };
 
-class NativeFunction;
+
+// Method objects.
+class MethodKlass : public Klass {
+private:
+	MethodKlass();
+	static MethodKlass* instance;
+
+public:
+	static MethodKlass* get_instance();
+};
 
 class MethodObject : public HiObject {
 private:
     HiObject* _owner;
-    FunctionObject* _func_ref;
-    NativeFunction* _nfunc_ref;
+    FunctionObject* _func;
 
 public:
-    MethodObject(HiObject* owner, FunctionObject* func, NativeFunction* nfunc) {
-        _owner = owner;
-        _func_ref = func;
-        _nfunc_ref = nfunc;
+    MethodObject(FunctionObject* func) : _func(func), _owner(NULL) {
+        set_klass(MethodKlass::get_instance());
     }
-    
-    HiObject* owner()               { return _owner; }
-    FunctionObject* func()          { return _func_ref; }
-    NativeFunction* native_func()   { return _nfunc_ref; }
+
+    MethodObject(FunctionObject* func, HiObject* owner) : _func(func), _owner(owner) {
+        set_klass(MethodKlass::get_instance());
+    }
+
+    void set_owner(HiObject * x)   { _owner = x; }
+    HiObject* owner()              { return _owner; }
+    FunctionObject* func()         { return _func; }
+
+	static bool is_native(HiObject* x);
+	static bool is_method(HiObject* x);
+	static bool is_function(HiObject* x);
+};
+
+class NativeFunctionKlass : public Klass {
+private:
+	NativeFunctionKlass() {}
+	static NativeFunctionKlass* instance;
+
+public:
+	static NativeFunctionKlass* get_instance();
 };
 
 #endif

@@ -10,4 +10,4 @@ HiNoneObject* HiNoneObject::get_instance() {
 	return instance;
 }
 
-HiNoneObject* Universe::HiNone = HiNoneObject::get_instance();
+HiObject* Universe::HiNone = HiNoneObject::get_instance();

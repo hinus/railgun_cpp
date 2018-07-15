@@ -1,10 +1,9 @@
 #ifndef _UNIVERSE_HPP
 #define _UNIVERSE_HPP
 
-#include "klass/klass.hpp"
-
+class Klass;
 class HiInteger;
-class HiNoneObject;
+class HiObject;
 
 class Universe {
 public:
@@ -15,7 +14,7 @@ public:
     static HiInteger* HiTrue;
     static HiInteger* HiFalse;
 
-	static HiNoneObject* HiNone;
+	static HiObject* HiNone;
 
 public:
     static void genesis();

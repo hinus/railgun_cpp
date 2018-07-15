@@ -25,7 +25,7 @@ public:
     Interpreter() {};
 
     void      run        (CodeObject* codes);
-    void      call_func  (MethodObject* func, ArrayList<HiObject*>* args);
+    void      call_func  (HiObject* func, ArrayList<HiObject*>* args);
     void      enter_frame(FrameObject* frame);
     void      eval_code  ();
     HiObject* leave_last_frame();

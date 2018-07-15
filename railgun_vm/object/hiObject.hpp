@@ -10,12 +10,19 @@ class HiObject {
 private:
     long _mark_word;
     Klass* _klass;
+    Map<HiObject*, HiObject*>* _obj_dict;
 
 public:
-    HiObject() {}
+    HiObject() {
+        _mark_word = 0;
+        _klass = 0;
+        _obj_dict = new Map<HiObject*, HiObject*>();
+    }
 
     Klass* klass()             { assert(_klass != NULL); return _klass; }
     void set_klass(Klass* x)   { _klass = x; }
+
+    Map<HiObject*, HiObject*>* obj_dict()  { return _obj_dict; }
 
 	void print();
     HiObject* greater  (HiObject* x);
@@ -32,6 +39,9 @@ public:
     HiObject* mod(HiObject* x);
 
     HiObject* getattr(HiObject* x);
+};
+
+class HiTypeObject : public HiObject {
 };
 
 #endif

@@ -1,5 +1,20 @@
 #include "runtime/functionObject.hpp"
 
+FunctionKlass* FunctionKlass::instance = NULL;
+
+FunctionKlass* FunctionKlass::get_instance() {
+	if (instance == NULL)
+		instance = new FunctionKlass();
+
+	return instance;
+}
+
+FunctionKlass::FunctionKlass() {
+    set_klass_dict(new Map<HiObject*, HiObject*>());
+    HiTypeObject* function_type_obj = new HiTypeObject();
+    set_type_object(function_type_obj);
+}
+
 FunctionObject::FunctionObject(HiObject* code_object, 
     ArrayList<HiObject*>* globals) {
     CodeObject* co = (CodeObject*) code_object;
@@ -23,4 +38,66 @@ void FunctionObject::set_default(ArrayList<HiObject*>* defaults) {
     for (int i = 0; i < defaults->length(); i++) {
         _defaults->set(i, defaults->get(i));
     }
+}
+
+void FunctionKlass::print(HiObject* obj) {
+	printf("native function : ");
+    FunctionObject* fo = static_cast<FunctionObject*>(obj);
+
+    assert(fo && fo->klass() == (Klass*) this);
+    fo->func_name()->print();
+}
+
+/*
+ *  Operations for methods
+ *  Method is a wrapper for function.
+ */
+
+MethodKlass* MethodKlass::instance = NULL;
+
+MethodKlass* MethodKlass::get_instance() {
+	if (instance == NULL)
+		instance = new MethodKlass();
+
+	return instance;
+}
+
+MethodKlass::MethodKlass() {
+    set_klass_dict(new Map<HiObject*, HiObject*>());
+
+    HiTypeObject* type_obj = new HiTypeObject();
+    set_type_object(type_obj);
+}
+
+/*
+ * To check the type of a callable object.
+ */
+bool MethodObject::is_native(HiObject *x) {
+	if (x->klass() == (Klass*) NativeFunctionKlass::get_instance())
+		return true;
+
+	return false;
+}
+
+bool MethodObject::is_method(HiObject *x) {
+	if (x->klass() == (Klass*) MethodKlass::get_instance())
+		return true;
+
+	return false;
+}
+
+bool MethodObject::is_function(HiObject *x) {
+	if (x->klass() == (Klass*) FunctionKlass::get_instance())
+		return true;
+
+	return false;
+}
+
+NativeFunctionKlass* NativeFunctionKlass::instance = NULL;
+
+NativeFunctionKlass* NativeFunctionKlass::get_instance() {
+	if (instance == NULL)
+		instance = new NativeFunctionKlass();
+
+	return instance;
 }

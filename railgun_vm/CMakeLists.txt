@@ -9,16 +9,14 @@ ADD_EXECUTABLE(railgun main.cpp
     klass/klass.cpp
     object/hiObject.cpp
     object/hiInteger.cpp
-    object/hiTypeObject.cpp
     object/hiNoneObject.cpp
     object/hiString.cpp
     object/hiList.cpp
+    object/hiDict.cpp
     runtime/functionObject.cpp
     runtime/frameObject.cpp
-    runtime/nativeFunction.cpp
     util/bufferedInputStream.cpp
     util/arrayList.cpp
-    util/map.cpp
     code/binaryFileParser.cpp
     code/codeObject.cpp
     code/interpreter.cpp)

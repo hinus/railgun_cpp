@@ -1,6 +1,7 @@
 #include "code/interpreter.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiList.hpp"
+#include "object/hiDict.hpp"
 
 #include <assert.h>
 
@@ -14,15 +15,18 @@ void Interpreter::run(CodeObject* codes) {
     eval_code();
 }
 
-void Interpreter::call_func(MethodObject* method, ArrayList<HiObject*>* args) {
-    if (method->native_func()) {
-        HiObject* result = (*method->native_func())(method->owner(), args);
+void Interpreter::call_func(HiObject* callable, ArrayList<HiObject*>* args) {
+	if (MethodObject::is_native(callable)) {
+		MethodObject* method = (MethodObject*) callable;
+		HiObject* result = method->func()->call((method->owner(), args));
         // we do not create a virtual frame, but native frame.
         _stack->push(result);
         return;
-    }
-    else {
-        FrameObject* frame = new FrameObject(method->func(), args);
+	}
+	else if (MethodObject::is_method(callable)) {
+	}
+	else if (MethodObject::is_function(callable)) {
+        FrameObject* frame = new FrameObject((FunctionObject*) callable, args);
         enter_frame(frame);
     }
 }
@@ -116,6 +120,11 @@ void Interpreter::eval_code() {
                 _stack->push(v); 
                 break;
 
+            case ByteCode::BUILD_MAP:
+                v = new HiDict();
+                _stack->push(v);
+                break;
+
             case ByteCode::LOAD_CONST:
                 _stack->push(_consts->get(op_arg));
                 break;
@@ -151,6 +160,13 @@ void Interpreter::eval_code() {
             case ByteCode::STORE_GLOBAL:
             case ByteCode::STORE_NAME:
                 _globals_table->set(op_arg, _stack->pop());
+                break;
+
+            case ByteCode::STORE_MAP:
+                w = _stack->pop();
+                u = _stack->pop();
+                v = _stack->top();
+                ((HiDict*)v)->put(u, w);
                 break;
 
             case ByteCode::COMPARE_OP:
@@ -263,7 +279,7 @@ void Interpreter::eval_code() {
                     args = NULL;
                 }
 
-                _stack->push(new MethodObject(NULL, fo, NULL));
+                _stack->push(fo);
                 break;
 
             case ByteCode::CALL_FUNCTION:

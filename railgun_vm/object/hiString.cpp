@@ -13,6 +13,9 @@ StringKlass* StringKlass::get_instance() {
 }
 
 HiObject* StringKlass::equal(HiObject* x, HiObject* y) {
+    if (x->klass() != y->klass())
+        return Universe::HiFalse;
+
 	HiString* sx = (HiString*) x;
 	HiString* sy = (HiString*) y;
 

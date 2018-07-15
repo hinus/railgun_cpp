@@ -70,5 +70,17 @@ HiObject* HiObject::le(HiObject * rhs) {
 }
 
 HiObject* HiObject::getattr(HiObject* x) {
-    return klass()->getattr(this, (HiString*)x);
+    HiObject* result = obj_dict()->get(x);
+
+    if (result)
+        return result;
+
+    result = klass()->type_object()->obj_dict()->get(x);
+
+    if (result)
+        return result;
+
+    result = klass()->klass_dict()->get(x);
+    return result;
 }
+
