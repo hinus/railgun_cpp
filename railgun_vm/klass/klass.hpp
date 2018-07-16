@@ -16,24 +16,26 @@ class HiTypeObject;
 class HiObject;
 class HiString;
 
-typedef Map<HiObject*, HiObject*>* InnerDict;
-
 class Klass {
 private:
     Klass* _super;
     HiTypeObject* _type_object;
-    InnerDict _klass_dict;
+    NameTable _klass_dict;
+	HiString* _name;
 
 public:
-    static Klass* allocate_instance_klass();
+    static HiObject* create_klass(HiObject* x, HiObject* supers, HiObject* name);
 
     void set_super(Klass* x)              { _super = x; }
     Klass* super()                        { return _super; }
     void set_type_object(HiTypeObject* x) { _type_object = x; }
     HiTypeObject* type_object()           { return _type_object; }
 
-    void set_klass_dict(InnerDict dict)   { _klass_dict = dict; }
-    InnerDict klass_dict()                { return _klass_dict; }
+    void set_klass_dict(NameTable dict)   { _klass_dict = dict; }
+    NameTable klass_dict()                { return _klass_dict; }
+
+    void set_name(HiString* x)            { _name = x; }
+    HiString* name()                      { return _name; }
 
     virtual void print(HiObject* obj) {}
 
@@ -44,7 +46,7 @@ public:
     virtual HiObject* ge       (HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* le       (HiObject* x, HiObject* y) { return 0; }
 
-    virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
+	virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* sub(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* mul(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* div(HiObject* x, HiObject* y) { return 0; }

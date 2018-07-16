@@ -1,9 +1,20 @@
+#include "klass/klass.hpp"
 #include "code/interpreter.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
+#include "runtime/universe.hpp"
 
 #include <assert.h>
+
+Interpreter::Interpreter() {
+    _builtins = new Map<HiObject*, HiObject*>();
+
+    _builtins->put(new HiString("__name__"), new HiString("__main__"));
+    _builtins->put(new HiString("True"),  Universe::HiTrue);
+    _builtins->put(new HiString("False"), Universe::HiFalse);
+    _builtins->put(new HiString("int"),   Universe::int_klass->type_object());
+}
 
 void Interpreter::run(CodeObject* codes) {
     FrameObject* frame = new FrameObject(codes, 
@@ -14,7 +25,7 @@ void Interpreter::run(CodeObject* codes) {
     eval_code();
 }
 
-void Interpreter::call_func(HiObject* callable, ArrayList<HiObject*>* args) {
+void Interpreter::call_func(HiObject* callable, ArrayList<HiObject*>* args, bool with_ret_value) {
     if (MethodObject::is_native(callable)) {
         HiObject* result = ((FunctionObject*)callable)->call(args);
         // we do not create a virtual frame, but native frame.
@@ -25,12 +36,32 @@ void Interpreter::call_func(HiObject* callable, ArrayList<HiObject*>* args) {
         MethodObject* method = (MethodObject*) callable;
         // return value is ignored here, because they are handled
         // by other pathes.
+        if (!args) {
+            args = new ArrayList<HiObject*>(1);
+        }
         args->insert(0, method->owner());
-        call_func(method->func(), args);
+        call_func(method->func(), args, with_ret_value);
     }
     else if (MethodObject::is_function(callable)) {
+        _top_frame->set_with_ret_value(with_ret_value);
         FrameObject* frame = new FrameObject((FunctionObject*) callable, args);
         enter_frame(frame);
+    }
+    else if (callable->klass() == Universe::type_klass) {
+        HiObject* inst = new HiObject();
+        inst->set_klass(((HiTypeObject*)callable)->own_klass());
+        _stack->push(inst);
+        HiObject* constructor = inst->getattr(new HiString("__init__"));
+        if (constructor) {
+            call_func(constructor, args, false);
+        }
+    }
+    else {
+        HiObject* m = callable->getattr(new HiString("__call__"));
+        if (m)
+            call_func(m, args, with_ret_value);
+        else
+            printf("Error : can not call a normal object.\n");
     }
 }
 
@@ -52,15 +83,15 @@ void Interpreter::enter_frame(FrameObject* frame) {
     _bytecodes     = _codes->_bytecodes->value();
 }
 
-HiObject* Interpreter::leave_last_frame() {
+void Interpreter::leave_last_frame() {
     if (!_top_frame->sender()) {
         //delete _top_frame;
         _top_frame = NULL;
-        return NULL;
+        return;
     }
 
+    HiObject* ret_value = _stack->pop();
     FrameObject* temp = _top_frame;
-    HiObject* result  = temp->_ret_value;
     _top_frame     = _top_frame->sender();
     _codes         = _top_frame->_codes;
     _pc            = _top_frame->get_pc();
@@ -75,14 +106,17 @@ HiObject* Interpreter::leave_last_frame() {
     _names         = _top_frame->_names;
     _globals_table = _top_frame->_globals;
 
+    if (_top_frame->with_ret_value()) {
+        _stack->push(ret_value);
+    }
+
     delete temp;
-    return result;
 }
 
 void Interpreter::eval_code() {
     _pc = 0;
     bool x86 = false;
-    HiObject* v, * w, * u, * attr;
+    HiObject* v, * w, * u;
     FunctionObject* fo;
     ArrayList<HiObject*>* args = NULL;
 
@@ -130,6 +164,14 @@ void Interpreter::eval_code() {
                 _stack->push(v);
                 break;
 
+            case ByteCode::BUILD_CLASS:
+                v = _stack->pop();
+                u = _stack->pop();
+                w = _stack->pop();
+                v = Klass::create_klass(v, u, w);
+                _stack->push(v);
+                break;
+
             case ByteCode::LOAD_CONST:
                 _stack->push(_consts->get(op_arg));
                 break;
@@ -156,6 +198,14 @@ void Interpreter::eval_code() {
                     _stack->push(w);
                     break;
                 }
+
+                w = _builtins->get(v);
+                if (w != 0) {
+                    _stack->push(w);
+                    break;
+                }
+
+                _stack->push(Universe::HiNone);
                 break;
 
             case ByteCode::LOAD_ATTR:
@@ -254,8 +304,7 @@ void Interpreter::eval_code() {
                 break;
                 
             case ByteCode::RETURN_VALUE:
-                _top_frame->_ret_value = _stack->pop(); 
-                _stack->push(leave_last_frame());
+                leave_last_frame();
                 break;
 
             case ByteCode::INPLACE_ADD: // drop down

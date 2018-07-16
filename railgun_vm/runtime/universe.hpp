@@ -7,14 +7,14 @@ class HiObject;
 
 class Universe {
 public:
-    static Klass* _object_klass;
-    static Klass* _type_klass;
-    static Klass* _int_klass;
+    static Klass* object_klass;
+    static Klass* type_klass;
+    static Klass* int_klass;
 
     static HiInteger* HiTrue;
     static HiInteger* HiFalse;
 
-	static HiObject* HiNone;
+    static HiObject* HiNone;
 
 public:
     static void genesis();

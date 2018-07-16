@@ -17,6 +17,7 @@ private:
     ArrayList<HiObject*>* _fast_locals;
     NameTable             _locals_table;
     NameTable             _globals_table;
+    NameTable             _builtins;
     FrameObject*          _top_frame;
     CodeObject*           _codes;
     const char*           _bytecodes;
@@ -24,13 +25,13 @@ private:
     int                   _pc;
 
 public:
-    Interpreter() {};
+    Interpreter();
 
     void      run        (CodeObject* codes);
-    void      call_func  (HiObject* func, ArrayList<HiObject*>* args);
+    void      call_func  (HiObject* func, ArrayList<HiObject*>* args, bool with_ret_value = true);
     void      enter_frame(FrameObject* frame);
     void      eval_code  ();
-    HiObject* leave_last_frame();
+    void      leave_last_frame();
 };
 
 #endif

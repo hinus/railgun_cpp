@@ -42,6 +42,11 @@ HiList::HiList() {
     _inner_list = new ArrayList<HiObject*>();
 }
 
+HiList::HiList(ObjList ol) {
+    set_klass(ListKlass::get_instance());
+    _inner_list = ol;
+}
+
 ListAppendKlass* ListAppendKlass::instance = NULL;
 
 ListAppendKlass* ListAppendKlass::get_instance() {
@@ -51,7 +56,7 @@ ListAppendKlass* ListAppendKlass::get_instance() {
     return instance;
 }
 
-HiObject* ListAppendKlass::call(ArgsList args) {
+HiObject* ListAppendKlass::call(ObjList args) {
     ((HiList*)(args->get(0)))->inner_list()->add(args->get(1));
     return Universe::HiNone;
 }

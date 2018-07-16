@@ -89,3 +89,42 @@ HiObject* HiObject::getattr(HiObject* x) {
     return result;
 }
 
+/*
+ * TypeObject is a special object
+ */
+TypeKlass* TypeKlass::instance = NULL;
+
+TypeKlass* TypeKlass::get_instance() {
+    if (instance == NULL)
+        instance = new TypeKlass();
+
+    return instance;
+}
+
+void TypeKlass::print(HiObject* obj) {
+    assert(obj->klass() == (Klass*) this);
+    printf("<type ");
+    Klass* own_klass = ((HiTypeObject*)obj)->own_klass();
+
+    NameTable attr_dict = own_klass->klass_dict();
+    if (attr_dict) {
+        HiObject* mod = attr_dict->get(new HiString("__module__"));
+        if (mod) {
+            mod->print();
+            printf(".");
+        }
+    }
+
+    own_klass->name()->print();
+    printf(">");
+}
+
+HiTypeObject::HiTypeObject() {
+    set_klass(TypeKlass::get_instance());
+}
+
+void HiTypeObject::set_own_klass(Klass* k) {
+    _own_klass = k; 
+    k->set_type_object(this);
+}
+

@@ -22,4 +22,7 @@ public:
     void resize(int n);
 };
 
+class HiObject;
+typedef ArrayList<HiObject*>* ObjList;
+
 #endif

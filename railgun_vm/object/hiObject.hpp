@@ -19,16 +19,12 @@ public:
         _obj_dict = new Map<HiObject*, HiObject*>();
     }
 
-	~HiObject() {
-		delete _obj_dict;
-	}
-
     Klass* klass()             { assert(_klass != NULL); return _klass; }
     void set_klass(Klass* x)   { _klass = x; }
 
     Map<HiObject*, HiObject*>* obj_dict()  { return _obj_dict; }
 
-	void print();
+    void print();
     HiObject* greater  (HiObject* x);
     HiObject* less     (HiObject* x);
     HiObject* equal    (HiObject* x);
@@ -45,7 +41,30 @@ public:
     HiObject* getattr(HiObject* x);
 };
 
+/*
+ * meta-klass for the object system.
+ */
+
+class TypeKlass : public Klass {
+private:
+    TypeKlass() {}
+    static TypeKlass* instance;
+
+public:
+    static TypeKlass* get_instance();
+
+    virtual void print(HiObject* obj);
+};
+
 class HiTypeObject : public HiObject {
+private:
+    Klass*  _own_klass;
+
+public:
+    HiTypeObject();
+
+    void    set_own_klass(Klass* k);
+    Klass*  own_klass()             { return _own_klass; }
 };
 
 #endif

@@ -5,7 +5,7 @@
 
 class IntegerKlass : public Klass {
 private:
-	IntegerKlass() {}
+	IntegerKlass();
 	static IntegerKlass* instance;
 
 public:

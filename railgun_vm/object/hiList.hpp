@@ -25,6 +25,7 @@ private:
     ArrayList<HiObject*>* _inner_list;
 public:
     HiList();
+    HiList(ObjList ol);
     ArrayList<HiObject*>* inner_list()  { return _inner_list; }
 };
 
@@ -40,7 +41,7 @@ public:
 	static ListAppendKlass* get_instance();
     
 public:
-    virtual HiObject* call(ArgsList args);
+    virtual HiObject* call(ObjList args);
 };
 
 #endif

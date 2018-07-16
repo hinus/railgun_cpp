@@ -27,7 +27,7 @@ public:
     
     CodeObject*           _codes;
     int                   _pc;
-    HiObject*             _ret_value;
+    bool                  _with_ret_value;
     FrameObject*          _sender;
 
 public:
@@ -36,6 +36,8 @@ public:
 
     void set_pc(int x)              { _pc = x; }
     int  get_pc()                   { return _pc; }
+    void set_with_ret_value(bool x) { _with_ret_value = x; }
+    bool with_ret_value()           { return _with_ret_value; }
 };
 
 #endif

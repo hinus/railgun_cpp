@@ -14,8 +14,6 @@ FrameObject::FrameObject(CodeObject* codes, NameTable globals) {
 
     _codes = codes;
     _pc    = 0;
-
-    _ret_value = NULL;
     _sender    = NULL;
 }
 
@@ -47,8 +45,6 @@ FrameObject::FrameObject (FunctionObject* func, ArrayList<HiObject*>* args) {
     _loop_stack  = new Stack<int>();
 
     _pc    = 0;
-
-    _ret_value = NULL;
     _sender    = NULL;
 }
 

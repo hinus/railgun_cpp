@@ -6,35 +6,34 @@
 #include "object/hiObject.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
-#include "object/hiNoneObject.hpp"
 #include "code/codeObject.hpp"
 
 class BinaryFileParser {
 private:
-	BufferedInputStream* file_stream;
-	int cur;
-	ArrayList<HiString*> _string_table;
-	
+    BufferedInputStream* file_stream;
+    int cur;
+    ArrayList<HiString*> _string_table;
+    
 public:
-	BinaryFileParser(BufferedInputStream* stream);
-	
+    BinaryFileParser(BufferedInputStream* stream);
+    
 public:
-	CodeObject* parse();
+    CodeObject* parse();
     CodeObject* get_code_object();
     HiString*   get_byte_codes();
-	char*       get_no_table();
-	int         get_int();
-	HiString*   get_string();
-	HiString*   get_name();
+    char*       get_no_table();
+    int         get_int();
+    HiString*   get_string();
+    HiString*   get_name();
 
-	HiString*   get_file_name();
+    HiString*   get_file_name();
 
-	ArrayList<HiObject*>*   get_consts();
-	ArrayList<HiObject*>*   get_names();
-	ArrayList<HiObject*>*   get_var_names();
-	ArrayList<HiObject*>*   get_free_vars();
-	ArrayList<HiObject*>*   get_cell_vars();
-	ArrayList<HiObject*>*   get_tuple();
+    ArrayList<HiObject*>*   get_consts();
+    ArrayList<HiObject*>*   get_names();
+    ArrayList<HiObject*>*   get_var_names();
+    ArrayList<HiObject*>*   get_free_vars();
+    ArrayList<HiObject*>*   get_cell_vars();
+    ArrayList<HiObject*>*   get_tuple();
 };
 
 #endif

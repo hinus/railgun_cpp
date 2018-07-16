@@ -39,13 +39,13 @@ public:
         _stack_size(stacksize),
         _flag(flag),
         _bytecodes(bytecodes),
-        _consts(consts),
         _names(names),
+        _consts(consts),
         _var_names(varnames),
         _free_vars(freevars),
         _cell_vars(cellvars),
-        _file_name(file_name),
         _co_name(co_name),
+        _file_name(file_name),
         _lineno(lineno),
         _notable(notable){
         }

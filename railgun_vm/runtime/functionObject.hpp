@@ -4,17 +4,15 @@
 #include "code/codeObject.hpp"
 #include "klass/klass.hpp"
 
-typedef ArrayList<HiObject*>* ArgsList;
-
 class FunctionKlass : public Klass {
 private:
-	FunctionKlass();
-	static FunctionKlass* instance;
+    FunctionKlass();
+    static FunctionKlass* instance;
 
 public:
-	static FunctionKlass* get_instance();
+    static FunctionKlass* get_instance();
 
-	virtual void print(HiObject* obj);
+    virtual void print(HiObject* obj);
 };
 
 class FunctionObject : public HiObject {
@@ -38,21 +36,21 @@ public:
         set_klass(klass);
     }
     
-    void set_default(ArgsList defaults);
+    void set_default(ObjList defaults);
 
-	HiString*  func_name()   { return _func_name; }
-	HiObject*  call(ArgsList args)        { return klass()->call(args); }
+    HiString*  func_name()   { return _func_name; }
+    HiObject*  call(ObjList args)        { return klass()->call(args); }
 };
 
 
 // Method objects.
 class MethodKlass : public Klass {
 private:
-	MethodKlass();
-	static MethodKlass* instance;
+    MethodKlass();
+    static MethodKlass* instance;
 
 public:
-	static MethodKlass* get_instance();
+    static MethodKlass* get_instance();
 };
 
 class MethodObject : public HiObject {
@@ -61,11 +59,11 @@ private:
     FunctionObject* _func;
 
 public:
-    MethodObject(FunctionObject* func) : _func(func), _owner(NULL) {
+    MethodObject(FunctionObject* func) : _owner(NULL), _func(func) {
         set_klass(MethodKlass::get_instance());
     }
 
-    MethodObject(FunctionObject* func, HiObject* owner) : _func(func), _owner(owner) {
+    MethodObject(FunctionObject* func, HiObject* owner) : _owner(owner), _func(func) {
         set_klass(MethodKlass::get_instance());
     }
 
@@ -73,18 +71,18 @@ public:
     HiObject* owner()              { return _owner; }
     FunctionObject* func()         { return _func; }
 
-	static bool is_native(HiObject* x);
-	static bool is_method(HiObject* x);
-	static bool is_function(HiObject* x);
+    static bool is_native(HiObject* x);
+    static bool is_method(HiObject* x);
+    static bool is_function(HiObject* x);
 };
 
 class NativeFunctionKlass : public Klass {
 private:
-	NativeFunctionKlass();
-	static NativeFunctionKlass* instance;
+    NativeFunctionKlass();
+    static NativeFunctionKlass* instance;
 
 public:
-	static NativeFunctionKlass* get_instance();
+    static NativeFunctionKlass* get_instance();
 };
 
 #endif

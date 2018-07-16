@@ -13,6 +13,7 @@ FunctionKlass::FunctionKlass() {
     set_klass_dict(new Map<HiObject*, HiObject*>());
     HiTypeObject* function_type_obj = new HiTypeObject();
     set_type_object(function_type_obj);
+    set_super(NULL);
 }
 
 FunctionObject::FunctionObject(HiObject* code_object, 
@@ -66,6 +67,7 @@ MethodKlass::MethodKlass() {
 
     HiTypeObject* type_obj = new HiTypeObject();
     set_type_object(type_obj);
+    set_super(FunctionKlass::get_instance());
 }
 
 /*

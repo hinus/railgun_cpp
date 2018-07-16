@@ -15,6 +15,7 @@ ADD_EXECUTABLE(railgun main.cpp
     object/hiDict.cpp
     runtime/functionObject.cpp
     runtime/frameObject.cpp
+    runtime/universe.cpp
     util/bufferedInputStream.cpp
     util/arrayList.cpp
     code/binaryFileParser.cpp

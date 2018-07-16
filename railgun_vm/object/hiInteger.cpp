@@ -5,12 +5,11 @@
 HiInteger* Universe::HiTrue  = new HiInteger(1);
 HiInteger* Universe::HiFalse = new HiInteger(0);
 
-HiInteger::HiInteger(int x) {
-    _value = x;
-    set_klass(IntegerKlass::get_instance());
-}
-
 IntegerKlass* IntegerKlass::instance = NULL;
+
+IntegerKlass::IntegerKlass() {
+    (new HiTypeObject())->set_own_klass(this);
+}
 
 IntegerKlass* IntegerKlass::get_instance() {
 	if (instance == NULL)
@@ -25,6 +24,11 @@ void IntegerKlass::print(HiObject* obj) {
 	assert(int_obj && ((char *)int_obj->klass()) == ((char *)this));
 
 	printf("%d", int_obj->value());
+}
+
+HiInteger::HiInteger(int x) {
+    _value = x;
+    set_klass(IntegerKlass::get_instance());
 }
 
 HiObject* IntegerKlass::greater(HiObject* x, HiObject* y) {
@@ -159,3 +163,4 @@ HiObject* IntegerKlass::mod(HiObject* x, HiObject* y) {
 
     return new HiInteger(ix->value() % iy->value());
 }
+
