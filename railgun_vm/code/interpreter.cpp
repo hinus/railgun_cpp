@@ -153,8 +153,9 @@ void Interpreter::eval_code() {
 
             case ByteCode::BUILD_LIST:
                 v = new HiList();
+                ((HiList*)v)->inner_list()->resize(op_arg);
                 while (op_arg--) {
-                    ((HiList*)v)->inner_list()->add(_stack->pop());
+                    ((HiList*)v)->inner_list()->set(op_arg, _stack->pop());
                 }
                 _stack->push(v); 
                 break;
@@ -251,7 +252,7 @@ void Interpreter::eval_code() {
                 w = _stack->pop();
                 u = _stack->pop();
                 v = _stack->top();
-                ((HiDict*)v)->put(u, w);
+                ((HiDict*)v)->put(w, u);
                 break;
 
             case ByteCode::COMPARE_OP:

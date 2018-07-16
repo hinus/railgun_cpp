@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 template <typename T>
-ArrayList<T>::ArrayList(int n = 8) {
+ArrayList<T>::ArrayList(int n) {
     _length = n;
     _size   = 0;
     _array  = new T[n];
