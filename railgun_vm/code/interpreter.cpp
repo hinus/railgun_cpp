@@ -217,7 +217,12 @@ void Interpreter::eval_code() {
             case ByteCode::LOAD_LOCALS:
                 _stack->push(new HiDict(_locals_table));
                 break;
-
+                
+            case ByteCode::BINARY_SUBSCR:
+                v = _stack->pop();
+                w = _stack->pop();
+                _stack->push(w->subscr(v));
+                break;
 
             case ByteCode::PRINT_ITEM:
                 v = _stack->pop();

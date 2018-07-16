@@ -46,6 +46,11 @@ HiObject* DictKlass::getattr(HiObject* obj, HiString* name) {
     return klass_dict()->get((HiObject*)name);
 }
 
+HiObject* DictKlass::subscr(HiObject* x, HiObject* y) {
+    assert(x && x->klass() == (Klass*) this);
+    return ((HiDict*)x)->map()->get(y);
+}
+
 HiDict::HiDict() {
     _map = new Map<HiObject*, HiObject*>();
     set_klass(DictKlass::get_instance());

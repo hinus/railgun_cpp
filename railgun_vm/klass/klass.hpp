@@ -53,6 +53,7 @@ public:
     virtual HiObject* mod(HiObject* x, HiObject* y) { return 0; }
 
     virtual HiObject* getattr(HiObject* x, HiString* y) { return 0; }
+    virtual HiObject* subscr (HiObject* x, HiObject* y) { return 0; }
 
     // alloacte instances
     virtual HiObject* allocate_instance() { return 0; }

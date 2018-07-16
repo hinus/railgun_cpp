@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 template <typename T>
-ArrayList<T>::ArrayList(int n) {
+ArrayList<T>::ArrayList(int n = 8) {
     _length = n;
     _size   = 0;
     _array  = new T[n];
@@ -35,7 +35,7 @@ void ArrayList<T>::expand() {
         delete[] _array;
         _array = new_array;
         _length <<= 1;
-        printf("expand an array!\n");
+        printf("expand an array to %d, size is %d\n", _length, _size);
     }
 }
 

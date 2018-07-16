@@ -39,6 +39,7 @@ public:
     HiObject* mod(HiObject* x);
 
     HiObject* getattr(HiObject* x);
+    HiObject* subscr(HiObject* x);
 };
 
 /*

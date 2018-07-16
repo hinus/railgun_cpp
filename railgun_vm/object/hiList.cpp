@@ -1,4 +1,5 @@
 #include "object/hiList.hpp"
+#include "object/hiInteger.hpp"
 #include "runtime/universe.hpp"
 #include <assert.h>
 
@@ -35,6 +36,16 @@ void ListKlass::print(HiObject* x) {
         lx->_inner_list->get(i)->print();
     }
     printf("]");
+}
+
+HiObject* ListKlass::subscr(HiObject* x, HiObject* y) {
+    assert(x && x->klass() == (Klass*) this);
+    assert(y && y->klass() == (Klass*) Universe::int_klass);
+
+    HiList * lx = (HiList*)x;
+    HiInteger* iy = (HiInteger*)y;
+    
+    return lx->inner_list()->get(iy->value());
 }
 
 HiList::HiList() {

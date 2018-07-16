@@ -12,6 +12,7 @@ public:
 	static DictKlass* get_instance();
 
     virtual HiObject* getattr(HiObject* x, HiString* y);
+    virtual HiObject* subscr (HiObject* x, HiObject* y);
 	virtual void print(HiObject* obj);
 };
 
