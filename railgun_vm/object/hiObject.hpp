@@ -6,6 +6,15 @@
 
 class HiString;
 
+class ObjectKlass : public Klass {
+private:
+    ObjectKlass();
+    static ObjectKlass* instance;
+
+public:
+    static ObjectKlass* get_instance();
+};
+
 class HiObject {
 private:
     long _mark_word;
@@ -17,6 +26,7 @@ public:
         _mark_word = 0;
         _klass = 0;
         _obj_dict = new Map<HiObject*, HiObject*>();
+        _klass = ObjectKlass::get_instance();
     }
 
     Klass* klass()             { assert(_klass != NULL); return _klass; }
@@ -39,6 +49,7 @@ public:
     HiObject* mod(HiObject* x);
 
     HiObject* getattr(HiObject* x);
+    HiObject* setattr(HiObject* x, HiObject* y);
     HiObject* subscr(HiObject* x);
 };
 

@@ -11,9 +11,10 @@ Interpreter::Interpreter() {
     _builtins = new Map<HiObject*, HiObject*>();
 
     _builtins->put(new HiString("__name__"), new HiString("__main__"));
-    _builtins->put(new HiString("True"),  Universe::HiTrue);
-    _builtins->put(new HiString("False"), Universe::HiFalse);
-    _builtins->put(new HiString("int"),   Universe::int_klass->type_object());
+    _builtins->put(new HiString("True"),     Universe::HiTrue);
+    _builtins->put(new HiString("False"),    Universe::HiFalse);
+    _builtins->put(new HiString("int"),      Universe::int_klass->type_object());
+    _builtins->put(new HiString("object"),   Universe::object_klass->type_object());
 }
 
 void Interpreter::run(CodeObject* codes) {
@@ -254,6 +255,13 @@ void Interpreter::eval_code() {
                 v = _stack->top();
                 ((HiDict*)v)->put(w, u);
                 break;
+                
+            case ByteCode::STORE_ATTR:
+                u = _stack->pop();
+                v = _names->get(op_arg);
+                w = _stack->pop();
+                u->setattr(v, w);
+                break;
 
             case ByteCode::COMPARE_OP:
                 w = _stack->pop();
@@ -385,7 +393,7 @@ void Interpreter::eval_code() {
                 break;
 
             default:
-                // do nothing
+                printf("Error : unrecognized bytecode\n");
                 break;
         }
     }

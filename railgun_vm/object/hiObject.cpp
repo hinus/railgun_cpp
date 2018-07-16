@@ -1,17 +1,27 @@
 #include "object/hiObject.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/universe.hpp"
 #include <assert.h>
 
-void HiObject::print() {
-    assert(_klass != NULL);
+ObjectKlass* ObjectKlass::instance = NULL;
 
-    _klass->print(this);
+ObjectKlass::ObjectKlass() {
+    set_super(NULL);
+}
+
+ObjectKlass* ObjectKlass::get_instance() {
+    if (instance == NULL)
+        instance = new ObjectKlass();
+
+    return instance;
+}
+
+void HiObject::print() {
+    klass()->print(this);
 }
 
 HiObject* HiObject::greater(HiObject * rhs) {
-    assert(_klass != NULL);
-
-    return _klass->greater(this, rhs);
+    return klass()->greater(this, rhs);
 }
 
 HiObject* HiObject::add(HiObject * rhs) {
@@ -87,6 +97,11 @@ HiObject* HiObject::getattr(HiObject* x) {
         result = new MethodObject((FunctionObject*)result, this);
     }
     return result;
+}
+
+HiObject* HiObject::setattr(HiObject* x, HiObject* y) {
+    obj_dict()->put(x, y);
+    return Universe::HiNone;
 }
 
 HiObject* HiObject::subscr(HiObject* x) {
