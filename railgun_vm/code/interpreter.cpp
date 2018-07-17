@@ -152,6 +152,7 @@ void Interpreter::eval_code() {
                 _stack->push(w);
                 break;
 
+            case ByteCode::BUILD_TUPLE: // drop down, we need this
             case ByteCode::BUILD_LIST:
                 v = new HiList();
                 ((HiList*)v)->inner_list()->resize(op_arg);
@@ -390,6 +391,9 @@ void Interpreter::eval_code() {
                     delete args;
                     args = NULL;
                 }
+                break;
+
+             case ByteCode::DELETE_ATTR:
                 break;
 
             default:

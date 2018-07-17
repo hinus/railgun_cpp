@@ -41,10 +41,12 @@ public:
     static const unsigned char STORE_NAME = 90; /* Index in name list */
     static const unsigned char FOR_ITER = 93;
     static const unsigned char STORE_ATTR = 95;  /* Index in name list */
+    static const unsigned char DELETE_ATTR = 96;
     static const unsigned char STORE_GLOBAL = 97;
     static const unsigned char DUP_TOPX = 99;	/* number of items to duplicate */
     static const unsigned char LOAD_CONST = 100; /* Index in const list */
     static const unsigned char LOAD_NAME = 101; /* Index in name list */
+    static const unsigned char BUILD_TUPLE = 102;
     static const unsigned char BUILD_LIST = 103;
     static const unsigned char BUILD_MAP = 105;
     static const unsigned char LOAD_ATTR = 106; /* Index in name list */
