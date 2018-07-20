@@ -15,15 +15,18 @@ enum vm_type {
 class HiTypeObject;
 class HiObject;
 class HiString;
+class OopClosure;
 
 class Klass {
 private:
-    Klass* _super;
+    Klass*        _super;
     HiTypeObject* _type_object;
-    NameTable _klass_dict;
-	HiString* _name;
+    NameTable     _klass_dict;
+    HiString*     _name;
 
 public:
+    Klass();
+
     static HiObject* create_klass(HiObject* x, HiObject* supers, HiObject* name);
 
     void set_super(Klass* x)              { _super = x; }
@@ -37,6 +40,8 @@ public:
     void set_name(HiString* x)            { _name = x; }
     HiString* name()                      { return _name; }
 
+    NameTable* klass_dict_address()       { return &_klass_dict; }
+
     virtual void print(HiObject* obj) {}
 
     virtual HiObject* greater  (HiObject* x, HiObject* y) { return 0; }
@@ -46,7 +51,7 @@ public:
     virtual HiObject* ge       (HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* le       (HiObject* x, HiObject* y) { return 0; }
 
-	virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* sub(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* mul(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* div(HiObject* x, HiObject* y) { return 0; }
@@ -58,6 +63,12 @@ public:
     // alloacte instances
     virtual HiObject* allocate_instance() { return 0; }
     virtual HiObject* call(ArrayList<HiObject*>* args) { return 0; }
+
+    // gc interfaces
+    virtual void oops_do(OopClosure* closure, HiObject* obj);
+    virtual size_t size();
+
+    void* operator new(size_t size);
 };
 
 #endif

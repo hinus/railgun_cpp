@@ -1,6 +1,10 @@
 #ifndef ARRAY_LIST_HPP
 #define ARRAY_LIST_HPP
 
+#include <stdio.h>
+
+class OopClosure;
+
 template <typename T>
 class ArrayList {
 private:
@@ -20,9 +24,16 @@ public:
     int  size();
     int  length();
     void resize(int n);
+
+    void* operator new(size_t size);
+
+    void oops_do(OopClosure* closure);
 };
 
 class HiObject;
 typedef ArrayList<HiObject*>* ObjList;
+
+class Klass;
+typedef ArrayList<Klass*>* KlassList;
 
 #endif

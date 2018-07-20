@@ -6,37 +6,34 @@
 
 class StringKlass : public Klass {
 private:
-	StringKlass() {}
-	static StringKlass* instance;
+    StringKlass() {}
+    static StringKlass* instance;
 
 public:
-	static StringKlass* get_instance();
+    static StringKlass* get_instance();
 
     virtual HiObject* equal    (HiObject* x, HiObject* y);
 
-	virtual void print(HiObject* obj);
+    virtual void print(HiObject* obj);
+
+    virtual void oops_do(OopClosure* closure, HiObject* obj);
+    virtual size_t size();
 };
 
 class HiString : public HiObject {
 private:
-    const char* _value;
-	int         _length;
+    char* _value;
+    int   _length;
 
 public:
-    HiString(const char * x) : 
-        _value(x) {
-            _length = strlen(x);
-			set_klass(StringKlass::get_instance());
-		}
+    HiString(const char * x);
+    HiString(const char * x, const int length);
 
-	HiString(const char * x, const int length) : 
-		_value(x),
-		_length(length) {
-			set_klass(StringKlass::get_instance());
-		}
+    const char* value()     { return _value; }
+    char** value_address()  { return &_value; };
+    int length()            { return _length; }
 
-	const char* value() {return _value;}
-	int length()  {return _length;}
+    void* operator new(size_t size);
 };
 
 #endif

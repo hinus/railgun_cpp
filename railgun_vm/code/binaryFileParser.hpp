@@ -21,7 +21,7 @@ public:
     CodeObject* parse();
     CodeObject* get_code_object();
     HiString*   get_byte_codes();
-    char*       get_no_table();
+    HiString*   get_no_table();
     int         get_int();
     HiString*   get_string();
     HiString*   get_name();

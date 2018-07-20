@@ -1,6 +1,8 @@
 #include "object/hiObject.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/universe.hpp"
+#include "memory/oopClosure.hpp"
+#include "memory/heap.hpp"
 #include <assert.h>
 
 ObjectKlass* ObjectKlass::instance = NULL;
@@ -109,6 +111,31 @@ HiObject* HiObject::subscr(HiObject* x) {
 }
 
 /*
+ * Interfaces for GC.
+ */
+void HiObject::oops_do(OopClosure* closure) {
+    klass()->oops_do(closure, this);
+}
+
+size_t HiObject::size() {
+    return klass()->size();
+}
+
+char* HiObject::new_address() {
+    if ((_mark_word & 0x1) == 0x1)
+        return (char*)(_mark_word & ((long)-8));
+
+    return NULL;
+}
+
+void HiObject::set_new_address(char* addr) {
+    if (!addr)
+        return;
+
+    _mark_word = ((long)addr) | 0x1;
+}
+
+/*
  * TypeObject is a special object
  */
 TypeKlass* TypeKlass::instance = NULL;
@@ -145,5 +172,9 @@ HiTypeObject::HiTypeObject() {
 void HiTypeObject::set_own_klass(Klass* k) {
     _own_klass = k; 
     k->set_type_object(this);
+}
+
+void* HiTypeObject::operator new(size_t size) {
+    return Universe::heap->allocate_meta(size);
 }
 

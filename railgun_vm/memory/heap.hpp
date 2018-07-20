@@ -5,6 +5,7 @@
 #include <malloc.h>
 
 class Space {
+friend class Heap;
 private:
     char*  _base;
     char*  _top;
@@ -12,9 +13,10 @@ private:
     size_t _size;
     size_t _capacity;
 
-public:
     Space(size_t size);
+    ~Space();
 
+public:
     void* allocate(size_t size);
     void clear();
     bool can_alloc(size_t size);
@@ -28,6 +30,8 @@ private:
     Space* eden;
     Space* survivor;
 
+    Space* metaspace;
+
     Heap(size_t size);
 
 public:
@@ -35,7 +39,10 @@ public:
     static Heap* instance;
     static Heap* get_instance();
 
+    ~Heap();
+
     void* allocate(size_t size);
+    void* allocate_meta(size_t size);
     void copy_live_objects();
 };
 

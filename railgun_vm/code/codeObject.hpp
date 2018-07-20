@@ -28,12 +28,12 @@ public:
     HiString* _file_name;
 
     int _lineno;
-    char* _notable;
+    HiString* _notable;
 
     CodeObject(int argcount, int nlocals, int stacksize, int flag, HiString* bytecodes,
                       ArrayList<HiObject*>* consts, ArrayList<HiObject*>* names, ArrayList<HiObject*>* varnames, 
                       ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
-                      HiString* file_name, HiString* co_name, int lineno, char* notable):
+                      HiString* file_name, HiString* co_name, int lineno, HiString* notable):
         _argcount(argcount),
         _nlocals(nlocals),
         _stack_size(stacksize),
@@ -49,6 +49,8 @@ public:
         _lineno(lineno),
         _notable(notable){
         }
+
+    void* operator new(size_t size);
 };
 
 #endif

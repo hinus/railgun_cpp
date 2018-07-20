@@ -22,6 +22,7 @@ void Interpreter::run(CodeObject* codes) {
         new Map<HiObject*, HiObject*>());
 
     _top_frame = NULL;
+    Universe::main_code = codes;
     enter_frame(frame);
     eval_code();
 }
@@ -86,7 +87,7 @@ void Interpreter::enter_frame(FrameObject* frame) {
 
 void Interpreter::leave_last_frame() {
     if (!_top_frame->sender()) {
-        //delete _top_frame;
+        delete _top_frame;
         _top_frame = NULL;
         return;
     }
@@ -134,6 +135,10 @@ void Interpreter::eval_code() {
         switch (op_code) {
             case ByteCode::POP_TOP:
                 _stack->pop();
+                break;
+
+            case ByteCode::DUP_TOP:
+                _stack->push(_stack->top());
                 break;
 
             case ByteCode::ROT_TWO:
@@ -369,7 +374,6 @@ void Interpreter::eval_code() {
                 fo->set_default(args);
 
                 if (args != NULL) {
-                    delete args;
                     args = NULL;
                 }
 
@@ -388,7 +392,6 @@ void Interpreter::eval_code() {
 
                 call_func(_stack->pop(), args);
                 if (args != NULL) {
-                    delete args;
                     args = NULL;
                 }
                 break;

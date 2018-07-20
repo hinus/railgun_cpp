@@ -4,13 +4,22 @@
 #include "code/binaryFileParser.hpp"
 #include "code/codeObject.hpp"
 #include "code/interpreter.hpp"
+#include "memory/heap.hpp"
+#include "runtime/universe.hpp"
 
 int main(int argc, char** argv) {
+    Universe::genesis();
+
     BufferedInputStream input_stream(argv[1]);
-	BinaryFileParser parser(&input_stream);
-	Interpreter interpreter;
+    BinaryFileParser parser(&input_stream);
 
-	interpreter.run(parser.parse());
+    Interpreter interpreter;
+    interpreter.run(parser.parse());
+    input_stream.close();
 
-	return 0;
+    Universe::heap->copy_live_objects();
+
+    Universe::destroy();
+
+    return 0;
 }

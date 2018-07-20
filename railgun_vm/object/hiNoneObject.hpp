@@ -5,11 +5,13 @@
 
 class HiNoneObject : public HiObject {
 private:
-	HiNoneObject() {}
-	static HiNoneObject * instance;
+    HiNoneObject() {}
+    static HiNoneObject * instance;
 
 public:
-	static HiNoneObject* get_instance();
+    static HiNoneObject* get_instance();
+
+    void* operator new(size_t size);
 };
 
 #endif

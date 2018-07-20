@@ -44,7 +44,7 @@ CodeObject* BinaryFileParser::get_code_object() {
     HiString* file_name   = get_file_name();
     HiString* module_name = get_name();
     int begin_line_no     = file_stream->read_int();
-    char* lnotab          = get_no_table();
+    HiString* lnotab      = get_no_table();
 
     return new CodeObject(argcount, nlocals, stacksize, flags, byte_codes,
         consts, names, var_names, free_vars, cell_vars, file_name, module_name,
@@ -59,7 +59,10 @@ HiString* BinaryFileParser::get_string() {
         str_value[i] = file_stream->read();
     }
 
-    return new HiString(str_value, length);
+    HiString* s = new HiString(str_value, length);
+    delete[] str_value;
+
+    return s;
 }
 
 HiString* BinaryFileParser::get_name() {
@@ -87,17 +90,10 @@ HiString* BinaryFileParser::get_file_name() {
 HiString* BinaryFileParser::get_byte_codes() {
     assert(file_stream->read() == 's');
 
-    int length = file_stream->read_int();
-    char* code = new char[length];
-
-    for (int i = 0; i < length; i++) {
-        code[i] = file_stream->read();
-    }
-
-    return new HiString(code, length);
+    return get_string();
 }
 
-char* BinaryFileParser::get_no_table() {
+HiString* BinaryFileParser::get_no_table() {
     char ch = file_stream->read();
     
     if (ch != 's' && ch != 't') {
@@ -105,16 +101,7 @@ char* BinaryFileParser::get_no_table() {
         return NULL;
     }
 
-    int length = file_stream->read_int();
-    
-    char* lnotab = new char[length + 1];
-
-    for (int i = 0; i < length; i++) {
-        lnotab[i] = file_stream->read();
-    }
-    lnotab[length] = '\0';
-
-    return lnotab;
+    return get_string();
 }
 
 ArrayList<HiObject*>* BinaryFileParser::get_consts() {

@@ -12,6 +12,11 @@ public:
         _len = 0;
     }
 
+    ~Stack() {
+        delete[] vector;
+        _len = 0;
+    }
+
     void push(V v) {
         vector[_len++] = v;
     }

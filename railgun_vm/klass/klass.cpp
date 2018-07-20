@@ -1,10 +1,17 @@
+#include "memory/oopClosure.hpp"
+#include "memory/heap.hpp"
 #include "klass/klass.hpp"
+#include "runtime/universe.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
 #include "object/hiString.hpp"
 
 #include <assert.h>
+
+Klass::Klass() {
+    Universe::klasses->add(this);
+}
 
 HiObject* Klass::create_klass(HiObject* x, HiObject* supers, HiObject* name) {
     assert(x->klass()      == (Klass*)DictKlass::get_instance());
@@ -27,3 +34,15 @@ HiObject* Klass::create_klass(HiObject* x, HiObject* supers, HiObject* name) {
     return type_obj;
 }
 
+void* Klass::operator new(size_t size) {
+    return Universe::heap->allocate_meta(size);
+}
+
+// this function will visit all children
+void Klass::oops_do(OopClosure* closure, HiObject* obj) {
+    closure->do_map(obj->obj_dict_address());
+}
+
+size_t Klass::size() {
+    return sizeof(HiObject);
+}

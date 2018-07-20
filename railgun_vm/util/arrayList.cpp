@@ -1,11 +1,16 @@
 #include "util/arrayList.hpp"
+#include "runtime/universe.hpp"
+#include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
+#include <new>
 #include <stdio.h>
 
 template <typename T>
 ArrayList<T>::ArrayList(int n) {
     _length = n;
     _size   = 0;
-    _array  = new T[n];
+    void* temp = Universe::heap->allocate(sizeof(T) * n);
+    _array  = new(temp)T[n];
 }
 
 template <typename T>
@@ -28,12 +33,14 @@ void ArrayList<T>::insert(int index, T t) {
 template <typename T>
 void ArrayList<T>::expand() {
     if (_size >= _length) {
-        T* new_array = new T[_length << 1];
+        void* temp = Universe::heap->allocate(sizeof(T) * (_length << 1));
+        T* new_array = new(temp)T[_length << 1];
         for (int i = 0; i < _length; i++) {
             new_array[i] = _array[i];
         }
-        delete[] _array;
         _array = new_array;
+        // we do not rely on this, but gc.
+        // delete _array;
         _length <<= 1;
         printf("expand an array to %d, size is %d\n", _length, _size);
     }
@@ -67,8 +74,30 @@ void ArrayList<T>::resize(int n) {
     _size = n;
 }
 
+template <typename T>
+void* ArrayList<T>::operator new(size_t size) {
+    return Universe::heap->allocate(size);
+}
+
+template <>
+void ArrayList<Klass*>::oops_do(OopClosure* closure) {
+    // do nothing
+    return;
+}
+
+template <typename T>
+void ArrayList<T>::oops_do(OopClosure* closure) {
+    for (int i = 0; i < size(); i++) {
+        closure->do_oop((HiObject**)&_array[i]);
+    }
+}
+
 class HiObject;
 template class ArrayList<HiObject*>;
 
 class HiString;
 template class ArrayList<HiString*>;
+
+class Klass;
+template class ArrayList<Klass*>;
+

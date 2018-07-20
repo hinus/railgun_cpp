@@ -25,6 +25,8 @@ public:
     virtual HiObject* mul(HiObject* x, HiObject* y);
     virtual HiObject* div(HiObject* x, HiObject* y);
     virtual HiObject* mod(HiObject* x, HiObject* y);
+
+    virtual size_t size();
 };
 
 
@@ -36,6 +38,8 @@ public:
 	HiInteger(int x);
 
     int value() { return _value; }
+
+    void* operator new(size_t size);
 };
 
 #endif
