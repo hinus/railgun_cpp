@@ -33,10 +33,10 @@ private:
     Space* metaspace;
 
     Heap(size_t size);
+    static Heap* instance;
 
 public:
     static size_t MAX_CAP;
-    static Heap* instance;
     static Heap* get_instance();
 
     ~Heap();
