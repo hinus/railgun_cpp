@@ -38,6 +38,7 @@ private:
 
 public:
     ScavengeOopClosure(Space* from, Space* to);
+    virtual ~ScavengeOopClosure();
 
     virtual void do_oop(HiObject** oop);
 

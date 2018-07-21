@@ -1,5 +1,6 @@
 #include "object/hiDict.hpp"
 #include "object/hiString.hpp"
+#include "runtime/universe.hpp"
 #include <assert.h>
 
 DictKlass* DictKlass::instance = NULL;
@@ -12,6 +13,7 @@ DictKlass* DictKlass::get_instance() {
 }
 
 DictKlass::DictKlass() {
+    set_super(Universe::object_klass);
     set_klass_dict(new Map<HiObject*, HiObject*>());
     klass_dict()->put(new HiString("test"), new HiString("hwllo"));
 

@@ -1,14 +1,13 @@
 #ifndef FRAME_OBJECT_HPP
 #define FRAME_OBJECT_HPP
 
-#include "object/hiObject.hpp"
 #include "code/codeObject.hpp"
 #include "util/stack.hpp"
 #include "util/map.hpp"
 #include "util/arrayList.hpp"
 #include "runtime/functionObject.hpp"
 
-class FrameObject : public HiObject {
+class FrameObject {
 public:
     FrameObject(CodeObject* codes, NameTable globals);
 

@@ -67,7 +67,7 @@ public:
     // gc interfaces
     // this is for objects of this type.
     virtual void oops_do(OopClosure* closure, HiObject* obj);
-    // for kkass itself only.
+    // for klass itself only.
     virtual void oops_do(OopClosure* closure);
     virtual size_t size();
 

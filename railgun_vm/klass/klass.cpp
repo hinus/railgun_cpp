@@ -11,6 +11,8 @@
 
 Klass::Klass() {
     Universe::klasses->add(this);
+    _klass_dict = NULL;
+    _name = NULL;
 }
 
 HiObject* Klass::create_klass(HiObject* x, HiObject* supers, HiObject* name) {
@@ -46,7 +48,7 @@ void Klass::oops_do(OopClosure* closure, HiObject* obj) {
 void Klass::oops_do(OopClosure* f) {
     f->do_oop((HiObject**)&_name);
     f->do_map(&_klass_dict);
-    f->do_map(_type_object->obj_dict_address());
+    f->do_oop((HiObject**)&_type_object);
 }
 
 size_t Klass::size() {

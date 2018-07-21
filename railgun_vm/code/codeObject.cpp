@@ -15,6 +15,9 @@ CodeKlass* CodeKlass::get_instance() {
 
 CodeKlass::CodeKlass() {
     set_super(Universe::object_klass);
+
+    HiTypeObject* dict_type_obj = new HiTypeObject();
+    set_type_object(dict_type_obj);
 }
 
 void CodeKlass::oops_do(OopClosure* f, HiObject* obj) {

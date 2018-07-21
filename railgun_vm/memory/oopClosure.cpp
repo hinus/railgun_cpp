@@ -11,6 +11,14 @@ ScavengeOopClosure::ScavengeOopClosure(Space* from, Space* to) {
     _oop_stack = new Stack<HiObject*>(1024);
 }
 
+ScavengeOopClosure::~ScavengeOopClosure() {
+    _from = NULL;
+    _to = NULL;
+
+    delete _oop_stack;
+    _oop_stack = NULL;
+}
+
 void ScavengeOopClosure::do_oop(HiObject** oop) {
     if (oop == NULL || *oop == NULL)
         return;
