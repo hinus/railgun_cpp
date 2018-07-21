@@ -43,6 +43,12 @@ void Klass::oops_do(OopClosure* closure, HiObject* obj) {
     closure->do_map(obj->obj_dict_address());
 }
 
+void Klass::oops_do(OopClosure* f) {
+    f->do_oop((HiObject**)&_name);
+    f->do_map(&_klass_dict);
+    f->do_map(_type_object->obj_dict_address());
+}
+
 size_t Klass::size() {
     return sizeof(HiObject);
 }

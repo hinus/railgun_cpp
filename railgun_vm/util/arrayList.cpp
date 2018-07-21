@@ -81,12 +81,20 @@ void* ArrayList<T>::operator new(size_t size) {
 
 template <>
 void ArrayList<Klass*>::oops_do(OopClosure* closure) {
-    // do nothing
+    closure->do_raw_mem((char**)(&_array), 
+            _length * sizeof(Klass*));
+
+    for (int i = 0; i < size(); i++) {
+        closure->do_klass((Klass**)&_array[i]);
+    }
     return;
 }
 
-template <typename T>
-void ArrayList<T>::oops_do(OopClosure* closure) {
+template <>
+void ArrayList<HiObject*>::oops_do(OopClosure* closure) {
+    closure->do_raw_mem((char**)(&_array), 
+            _length * sizeof(HiObject*));
+
     for (int i = 0; i < size(); i++) {
         closure->do_oop((HiObject**)&_array[i]);
     }

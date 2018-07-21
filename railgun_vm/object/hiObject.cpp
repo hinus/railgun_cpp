@@ -1,4 +1,5 @@
 #include "object/hiObject.hpp"
+#include "object/hiString.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/universe.hpp"
 #include "memory/oopClosure.hpp"
@@ -114,6 +115,7 @@ HiObject* HiObject::subscr(HiObject* x) {
  * Interfaces for GC.
  */
 void HiObject::oops_do(OopClosure* closure) {
+    // object does not know who to visit, klass knows
     klass()->oops_do(closure, this);
 }
 

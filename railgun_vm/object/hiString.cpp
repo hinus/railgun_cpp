@@ -48,6 +48,7 @@ void StringKlass::oops_do(OopClosure* closure, HiObject* obj) {
     HiString* str_obj = (HiString*) obj;
     assert(str_obj && str_obj->klass() == (Klass*)this);
 
+    closure->do_map(str_obj->obj_dict_address());
     closure->do_raw_mem(str_obj->value_address(), str_obj->length());
 }
 

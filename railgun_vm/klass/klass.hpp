@@ -65,7 +65,10 @@ public:
     virtual HiObject* call(ArrayList<HiObject*>* args) { return 0; }
 
     // gc interfaces
+    // this is for objects of this type.
     virtual void oops_do(OopClosure* closure, HiObject* obj);
+    // for kkass itself only.
+    virtual void oops_do(OopClosure* closure);
     virtual size_t size();
 
     void* operator new(size_t size);

@@ -54,12 +54,15 @@ void Universe::destroy() {
 }
 
 void Universe::oops_do(OopClosure* closure) {
-    closure->do_klass(int_klass);
-    closure->do_klass(type_klass);
-    closure->do_klass(object_klass);
+    closure->do_klass(&int_klass);
+    closure->do_klass(&type_klass);
+    closure->do_klass(&object_klass);
 
     closure->do_oop((HiObject**)&HiTrue);
     closure->do_oop((HiObject**)&HiFalse);
     closure->do_oop((HiObject**)&HiNone);
+    closure->do_oop((HiObject**)&main_code);
+
+    closure->do_array_list(&klasses);
 }
 

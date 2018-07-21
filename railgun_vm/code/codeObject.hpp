@@ -4,11 +4,25 @@
 #include <iostream>
 
 #include "object/hiObject.hpp"
-#include "util/arrayList.hpp"
-#include "object/hiString.hpp"
+#include "klass/klass.hpp"
+
+class HiString;
+
+class CodeKlass : public Klass {
+private:
+    CodeKlass();
+    static CodeKlass* instance;
+
+public:
+    static CodeKlass* get_instance();
+
+    virtual void oops_do(OopClosure* closure, HiObject* obj);
+    virtual size_t size();
+};
 
 class CodeObject : public HiObject {
 friend class FunctionObject;
+friend class CodeKlass;
 
 public:
     int _argcount;
@@ -29,26 +43,11 @@ public:
 
     int _lineno;
     HiString* _notable;
-
     CodeObject(int argcount, int nlocals, int stacksize, int flag, HiString* bytecodes,
-                      ArrayList<HiObject*>* consts, ArrayList<HiObject*>* names, ArrayList<HiObject*>* varnames, 
-                      ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
-                      HiString* file_name, HiString* co_name, int lineno, HiString* notable):
-        _argcount(argcount),
-        _nlocals(nlocals),
-        _stack_size(stacksize),
-        _flag(flag),
-        _bytecodes(bytecodes),
-        _names(names),
-        _consts(consts),
-        _var_names(varnames),
-        _free_vars(freevars),
-        _cell_vars(cellvars),
-        _co_name(co_name),
-        _file_name(file_name),
-        _lineno(lineno),
-        _notable(notable){
-        }
+        ArrayList<HiObject*>* consts, ArrayList<HiObject*>* names, 
+        ArrayList<HiObject*>* varnames, 
+        ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
+        HiString* file_name, HiString* co_name, int lineno, HiString* notable);
 
     void* operator new(size_t size);
 };

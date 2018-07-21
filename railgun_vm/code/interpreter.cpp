@@ -22,7 +22,6 @@ void Interpreter::run(CodeObject* codes) {
         new Map<HiObject*, HiObject*>());
 
     _top_frame = NULL;
-    Universe::main_code = codes;
     enter_frame(frame);
     eval_code();
 }

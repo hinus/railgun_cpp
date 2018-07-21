@@ -1,3 +1,4 @@
+#include "object/hiString.hpp"
 #include "runtime/functionObject.hpp"
 
 FunctionKlass* FunctionKlass::instance = NULL;

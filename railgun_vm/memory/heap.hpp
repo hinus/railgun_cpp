@@ -4,6 +4,8 @@
 #include <memory.h>
 #include <malloc.h>
 
+class HiObject;
+
 class Space {
 friend class Heap;
 private:
@@ -20,6 +22,7 @@ public:
     void* allocate(size_t size);
     void clear();
     bool can_alloc(size_t size);
+    bool has_obj(HiObject* obj);
 };
 
 class Heap {
@@ -33,10 +36,10 @@ private:
     Space* metaspace;
 
     Heap(size_t size);
-    static Heap* instance;
 
 public:
     static size_t MAX_CAP;
+    static Heap* instance;
     static Heap* get_instance();
 
     ~Heap();
@@ -44,6 +47,8 @@ public:
     void* allocate(size_t size);
     void* allocate_meta(size_t size);
     void copy_live_objects();
+
+    void gc();
 };
 
 #endif

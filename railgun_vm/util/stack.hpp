@@ -32,6 +32,10 @@ public:
     int len() {
         return _len;
     }
+
+    bool empty() {
+        return _len == 0;
+    }
 };
 
 #endif

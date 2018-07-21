@@ -1,6 +1,6 @@
+#include "runtime/universe.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
-#include "runtime/universe.hpp"
 
 Heap*  Heap::instance = NULL;
 size_t Heap::MAX_CAP = 1024 * 1024;
@@ -47,13 +47,7 @@ Heap::~Heap() {
 
 void* Heap::allocate(size_t size) {
     if (!eden->can_alloc(size)) {
-        copy_live_objects();
-
-        Space* t = eden;
-        eden = survivor;
-        survivor = t;
-
-        survivor->clear();
+        gc();
     }
 
     return eden->allocate(size);
@@ -68,12 +62,18 @@ void* Heap::allocate_meta(size_t size) {
 }
 
 void Heap::copy_live_objects() {
-    OopClosure* closure = new ScavengeOopClosure(eden, survivor);
-    
-    // TODO : step 1, mark roots
-    Universe::oops_do(closure);
+    ScavengeOopClosure* closure = new ScavengeOopClosure(eden, survivor);
+    closure->scavenge();
+}
 
-    // step2, copy
+void Heap::gc() {
+    copy_live_objects();
+
+    Space* t = eden;
+    eden = survivor;
+    survivor = t;
+
+    survivor->clear();
 }
 
 Space::Space(size_t size) {
@@ -106,11 +106,15 @@ void* Space::allocate(size_t size) {
     size = (size + 7) & -8;
     char* start = _top;
     _top += size;
-    //printf("after  %lx, _top is %p\n", size, _top);
+    //printf("after allocate %lx, _top is %p\n", size, _top);
     return start;
 }
 
 bool Space::can_alloc(size_t size) {
     return true;
+}
+
+bool Space::has_obj(HiObject* obj) {
+    return (char*)obj >= _base && _end > (char*)obj;
 }
 

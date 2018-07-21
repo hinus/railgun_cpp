@@ -14,10 +14,13 @@ int main(int argc, char** argv) {
     BinaryFileParser parser(&input_stream);
 
     Interpreter interpreter;
-    interpreter.run(parser.parse());
+    Universe::main_code = parser.parse();
+    Universe::heap->gc();
+
+    interpreter.run(Universe::main_code);
+
     input_stream.close();
 
-    Universe::heap->copy_live_objects();
 
     Universe::destroy();
 

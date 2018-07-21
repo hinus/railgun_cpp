@@ -1,31 +1,24 @@
+#include "runtime/universe.hpp"
 #include "memory/oopClosure.hpp"
 #include "memory/heap.hpp"
+#include "util/stack.hpp"
 #include "object/hiObject.hpp"
 
 ScavengeOopClosure::ScavengeOopClosure(Space* from, Space* to) {
     _from = from;
     _to = to;
+
+    _oop_stack = new Stack<HiObject*>(1024);
 }
 
 void ScavengeOopClosure::do_oop(HiObject** oop) {
     if (oop == NULL || *oop == NULL)
         return;
 
-    HiObject* obj = (*oop);
-    char* target = obj->new_address();
-    if (target) {
-        (*(char**)oop) = target;
-        return;
-    }
-
-    size_t size = obj->size();
-    target = (char*)_to->allocate(size);
-    memcpy(target, obj, size);
-    (*(char**)oop) = target;
-    obj->set_new_address(target);
-
-    obj = (HiObject*) target;
-    obj->oops_do(this);
+    if (_from->has_obj(*oop))
+        (*oop) = copy_and_push(*oop);
+    else
+        _oop_stack->push(*oop);
 }
 
 void ScavengeOopClosure::do_array_list(ArrayList<Klass*>** alist) {
@@ -37,14 +30,11 @@ void ScavengeOopClosure::do_array_list(ArrayList<Klass*>** alist) {
     memcpy(target, (*alist), size);
     (*(char**)alist) = target;
 
-    // since we do not move Klass, we can inline it here
-    for (int i = 0; i < (*alist)->size(); i++) {
-        do_klass((*alist)->get(i));
-    }
+    (*alist)->oops_do(this);
 }
 
 void ScavengeOopClosure::do_array_list(ArrayList<HiObject*>** alist) {
-    if (*alist == NULL)
+    if (alist == NULL || *alist == NULL)
         return;
 
     size_t size = sizeof(ArrayList<HiObject*>);
@@ -55,7 +45,7 @@ void ScavengeOopClosure::do_array_list(ArrayList<HiObject*>** alist) {
 }
 
 void ScavengeOopClosure::do_map(Map<HiObject*, HiObject*>** amap) {
-    if (*amap == NULL)
+    if (amap == NULL || *amap == NULL)
         return;
 
     size_t size = sizeof(Map<HiObject*, HiObject*>);
@@ -75,7 +65,42 @@ void ScavengeOopClosure::do_raw_mem(char** mem, int length) {
 }
 
 // we do not move klass
-void ScavengeOopClosure::do_klass(Klass* k) {
-    do_map(k->klass_dict_address());
+void ScavengeOopClosure::do_klass(Klass** k) {
+    if (k == NULL || *k == NULL)
+        return;
+
+    (*k)->oops_do(this);
+}
+
+HiObject* ScavengeOopClosure::copy_and_push(HiObject* obj) {
+    char* target = obj->new_address();
+    if (target) {
+        return (HiObject*)target;
+    }
+
+    // copy
+    size_t size = obj->size();
+    target = (char*)_to->allocate(size);
+    memcpy(target, obj, size);
+    obj->set_new_address(target);
+    
+    // push
+    _oop_stack->push((HiObject*)target);
+
+    return (HiObject*)target;
+}
+
+void ScavengeOopClosure::scavenge() {
+    // TODO : step 1, mark roots
+    process_roots();
+
+    // step2, process all objects;
+    while (!_oop_stack->empty()) {
+        _oop_stack->pop()->oops_do(this);
+    }
+}
+
+void ScavengeOopClosure::process_roots() {
+    Universe::oops_do(this);
 }
 
