@@ -4,6 +4,7 @@
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiObject.hpp"
+#include "object/hiDict.hpp"
 #include "object/hiNoneObject.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
@@ -20,6 +21,9 @@ HiInteger* Universe::HiFalse  = NULL;
 HiObject*  Universe::HiNone   = NULL;
 
 CodeObject* Universe::main_code = NULL;
+
+// exceptions
+HiObject*  Universe::stop_iteration   = NULL;
 
 void Universe::genesis() {
     heap = Heap::get_instance();
@@ -46,6 +50,10 @@ void Universe::genesis() {
     HiTypeObject* obj_obj = new HiTypeObject();
     obj_obj->set_own_klass(object_klass);
     object_klass->set_super(NULL);
+
+    DictKlass::get_instance()->initialize();
+
+    stop_iteration = new HiObject();
 }
 
 void Universe::destroy() {
@@ -62,6 +70,8 @@ void Universe::oops_do(OopClosure* closure) {
     closure->do_oop((HiObject**)&HiFalse);
     closure->do_oop((HiObject**)&HiNone);
     closure->do_oop((HiObject**)&main_code);
+
+    closure->do_oop(&stop_iteration);
 
     closure->do_array_list(&klasses);
 }

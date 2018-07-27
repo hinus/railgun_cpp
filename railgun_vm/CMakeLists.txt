@@ -16,11 +16,15 @@ ADD_EXECUTABLE(railgun main.cpp
     runtime/functionObject.cpp
     runtime/frameObject.cpp
     runtime/universe.cpp
+    runtime/generator.cpp
+    runtime/stringTable.cpp
     memory/heap.cpp
     memory/oopClosure.cpp
     util/bufferedInputStream.cpp
     util/arrayList.cpp
     util/map.cpp
+    util/stack.cpp
+    util/handles.cpp
     code/binaryFileParser.cpp
     code/codeObject.cpp
     code/interpreter.cpp)

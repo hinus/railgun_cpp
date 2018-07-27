@@ -1,12 +1,16 @@
 #include "runtime/universe.hpp"
+#include "runtime/stringTable.hpp"
+#include "code/interpreter.hpp"
 #include "memory/oopClosure.hpp"
 #include "memory/heap.hpp"
 #include "util/stack.hpp"
+#include "util/handles.hpp"
 #include "object/hiObject.hpp"
 
-ScavengeOopClosure::ScavengeOopClosure(Space* from, Space* to) {
+ScavengeOopClosure::ScavengeOopClosure(Space* from, Space* to, Space* meta) {
     _from = from;
     _to = to;
+    _meta = meta;
 
     _oop_stack = new Stack<HiObject*>(1024);
 }
@@ -23,15 +27,20 @@ void ScavengeOopClosure::do_oop(HiObject** oop) {
     if (oop == NULL || *oop == NULL)
         return;
 
-    if (_from->has_obj(*oop))
-        (*oop) = copy_and_push(*oop);
-    else
-        _oop_stack->push(*oop);
+    // this oop has been handled, since it may be
+    // refered by Klass
+    if(!_from->has_obj((char*)*oop))
+        return;
+
+    (*oop) = copy_and_push(*oop);
 }
 
 void ScavengeOopClosure::do_array_list(ArrayList<Klass*>** alist) {
     if (alist == NULL || *alist == NULL)
         return;
+
+    // no chance to visit list more than once.
+    assert(_from->has_obj((char*)*alist));
 
     size_t size = sizeof(ArrayList<Klass*>);
     char* target = (char*)_to->allocate(size);
@@ -45,6 +54,8 @@ void ScavengeOopClosure::do_array_list(ArrayList<HiObject*>** alist) {
     if (alist == NULL || *alist == NULL)
         return;
 
+    assert(_from->has_obj((char*)*alist));
+
     size_t size = sizeof(ArrayList<HiObject*>);
     char* target = (char*)_to->allocate(size);
     memcpy(target, (*alist), size);
@@ -55,6 +66,8 @@ void ScavengeOopClosure::do_array_list(ArrayList<HiObject*>** alist) {
 void ScavengeOopClosure::do_map(Map<HiObject*, HiObject*>** amap) {
     if (amap == NULL || *amap == NULL)
         return;
+
+    assert(_from->has_obj((char*)*amap));
 
     size_t size = sizeof(Map<HiObject*, HiObject*>);
     char* target = (char*)_to->allocate(size);
@@ -110,5 +123,13 @@ void ScavengeOopClosure::scavenge() {
 
 void ScavengeOopClosure::process_roots() {
     Universe::oops_do(this);
+    Interpreter::get_instance()->oops_do(this);
+    HandleMark::get_instance()->oops_do(this);
+    StringTable::get_instance()->oops_do(this);
+}
+
+void ScavengeOopClosure::do_stack(Stack<HiObject*>** astack) {
+    // do not copy stack.
+    (*astack)->oops_do(this);
 }
 

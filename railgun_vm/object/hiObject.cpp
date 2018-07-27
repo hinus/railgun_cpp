@@ -1,5 +1,6 @@
 #include "object/hiObject.hpp"
 #include "object/hiString.hpp"
+#include "object/hiDict.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/universe.hpp"
 #include "memory/oopClosure.hpp"
@@ -57,6 +58,10 @@ HiObject* HiObject::mod(HiObject * rhs) {
     return _klass->mod(this, rhs);
 }
 
+HiObject* HiObject::bi_and(HiObject * rhs) {
+    return klass()->bi_and(this, rhs);
+}
+
 HiObject* HiObject::less(HiObject * rhs) {
     assert(_klass != NULL);
 
@@ -84,18 +89,30 @@ HiObject* HiObject::le(HiObject * rhs) {
 }
 
 HiObject* HiObject::getattr(HiObject* x) {
-    HiObject* result = obj_dict()->get(x);
+    HiObject* result = Universe::HiNone;
 
-    if (result)
+    if (_obj_dict)
+        result = _obj_dict->get(x);
+
+    if (result != Universe::HiNone)
         return result;
 
-    result = klass()->type_object()->obj_dict()->get(x);
+    HiDict* attr_dict = klass()->type_object()->obj_dict();
+    if (attr_dict)
+        result = attr_dict->get(x);
 
-    if (result)
+    if (result != Universe::HiNone)
         return result;
+
+    if (!klass()->klass_dict())
+        return Universe::HiNone;
 
     result = klass()->klass_dict()->get(x);
 
+    if (result == Universe::HiNone)
+        return Universe::HiNone;
+
+    // Only klass attribute needs bind.
     if (MethodObject::is_function(result)) {
         result = new MethodObject((FunctionObject*)result, this);
     }
@@ -103,12 +120,34 @@ HiObject* HiObject::getattr(HiObject* x) {
 }
 
 HiObject* HiObject::setattr(HiObject* x, HiObject* y) {
-    obj_dict()->put(x, y);
+    if (!_obj_dict)
+        _obj_dict = new HiDict();
+
+    _obj_dict->put(x, y);
     return Universe::HiNone;
+}
+
+void HiObject::delattr(HiObject* x) {
+    if (!_obj_dict)
+        return;
+    
+    _obj_dict->remove(x);
 }
 
 HiObject* HiObject::subscr(HiObject* x) {
     return klass()->subscr(this, x);
+}
+
+void HiObject::store_subscr(HiObject* x, HiObject* y) {
+    klass()->store_subscr(this, x, y);
+}
+
+HiObject* HiObject::iter() {
+    return klass()->iter(this);
+}
+
+HiObject* HiObject::next() {
+    return klass()->next(this);
 }
 
 /*
@@ -137,6 +176,10 @@ void HiObject::set_new_address(char* addr) {
     _mark_word = ((long)addr) | 0x1;
 }
 
+void* HiObject::operator new(size_t size) {
+    return Universe::heap->allocate(size);
+}
+
 /*
  * TypeObject is a special object
  */
@@ -154,7 +197,7 @@ void TypeKlass::print(HiObject* obj) {
     printf("<type ");
     Klass* own_klass = ((HiTypeObject*)obj)->own_klass();
 
-    NameTable attr_dict = own_klass->klass_dict();
+    HiDict* attr_dict = own_klass->klass_dict();
     if (attr_dict) {
         HiObject* mod = attr_dict->get(new HiString("__module__"));
         if (mod) {
@@ -167,6 +210,14 @@ void TypeKlass::print(HiObject* obj) {
     printf(">");
 }
 
+size_t TypeKlass::size() {
+    return sizeof(HiTypeObject);
+}
+
+void TypeKlass::oops_do(OopClosure* f, HiObject* obj) {
+    // do nothing since HiTypeObject refers no oop.
+}
+
 HiTypeObject::HiTypeObject() {
     set_klass(TypeKlass::get_instance());
 }
@@ -174,9 +225,5 @@ HiTypeObject::HiTypeObject() {
 void HiTypeObject::set_own_klass(Klass* k) {
     _own_klass = k; 
     k->set_type_object(this);
-}
-
-void* HiTypeObject::operator new(size_t size) {
-    return Universe::heap->allocate_meta(size);
 }
 

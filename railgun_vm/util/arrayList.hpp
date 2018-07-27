@@ -23,7 +23,7 @@ public:
     void set(int index, T t);
     int  size();
     int  length();
-    void resize(int n);
+    T    pop();
 
     void* operator new(size_t size);
 

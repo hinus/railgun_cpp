@@ -39,7 +39,7 @@ template <typename K, typename V>
 V Map<K, V>::get(K k) {
     int i = index(k);
     if (i < 0)
-        return 0;
+        return Universe::HiNone;
     else
         return _entries[i]._v;
 }
@@ -93,6 +93,11 @@ void Map<K, V>::oops_do(OopClosure* closure) {
 template <typename K, typename V>
 void* Map<K, V>::operator new(size_t size) {
     return Universe::heap->allocate(size);
+}
+
+template <typename K, typename V>
+K Map<K, V>::get_key(int index) {
+    return _entries[index]._k;
 }
 
 template class Map<HiObject*, HiObject*>;

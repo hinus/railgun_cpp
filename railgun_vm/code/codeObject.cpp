@@ -24,7 +24,7 @@ void CodeKlass::oops_do(OopClosure* f, HiObject* obj) {
     CodeObject* co = (CodeObject*) obj;
     assert(co && co->klass() == (Klass*)this);
 
-    f->do_map(co->obj_dict_address());
+    f->do_oop(co->obj_dict_address());
     f->do_oop((HiObject**)&co->_bytecodes);
     f->do_array_list(&co->_names);
     f->do_array_list(&co->_consts);
@@ -58,10 +58,6 @@ CodeObject::CodeObject(int argcount, int nlocals, int stacksize, int flag, HiStr
         _file_name(file_name),
         _lineno(lineno),
         _notable(notable){
-            set_klass(CodeKlass::get_instance());
-        }
-
-void* CodeObject::operator new(size_t size) {
-    return Universe::heap->allocate_meta(size);
+    set_klass(CodeKlass::get_instance());
 }
 

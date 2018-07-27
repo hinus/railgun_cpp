@@ -3,7 +3,7 @@
 #include "memory/oopClosure.hpp"
 
 Heap*  Heap::instance = NULL;
-size_t Heap::MAX_CAP = 1024 * 1024;
+size_t Heap::MAX_CAP = 2 * 1024 * 1024;
 
 Heap* Heap::get_instance() {
     if (instance == NULL)
@@ -15,7 +15,7 @@ Heap* Heap::get_instance() {
 Heap::Heap(size_t size) {
     mem_1 = new Space(size);
     mem_2 = new Space(size);
-    metaspace = new Space(size * 2);
+    metaspace = new Space(size / 16);
 
     mem_1->clear();
     mem_2->clear();
@@ -62,17 +62,24 @@ void* Heap::allocate_meta(size_t size) {
 }
 
 void Heap::copy_live_objects() {
-    ScavengeOopClosure* closure = new ScavengeOopClosure(eden, survivor);
+    ScavengeOopClosure* closure = new ScavengeOopClosure(eden, survivor, metaspace);
     closure->scavenge();
     delete closure;
 }
 
 void Heap::gc() {
+    printf("gc starting...\n");
+    printf("  befroe gc : \n");
+    printf("  eden's capacity is %lu\n", eden->_capacity);
     copy_live_objects();
 
     Space* t = eden;
     eden = survivor;
     survivor = t;
+
+    printf("  after gc : \n");
+    printf("  eden's capacity is %lu\n", eden->_capacity);
+    printf("gc end\n");
 
     survivor->clear();
 }
@@ -106,16 +113,17 @@ void Space::clear() {
 void* Space::allocate(size_t size) {
     size = (size + 7) & -8;
     char* start = _top;
-    _top += size;
+    _top       += size;
+    _capacity  -= size;
     //printf("after allocate %lx, _top is %p\n", size, _top);
     return start;
 }
 
 bool Space::can_alloc(size_t size) {
-    return true;
+    return _capacity > size;
 }
 
-bool Space::has_obj(HiObject* obj) {
-    return (char*)obj >= _base && _end > (char*)obj;
+bool Space::has_obj(char* obj) {
+    return obj >= _base && _end > obj;
 }
 

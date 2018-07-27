@@ -22,7 +22,7 @@ public:
     void* allocate(size_t size);
     void clear();
     bool can_alloc(size_t size);
-    bool has_obj(HiObject* obj);
+    bool has_obj(char* obj);
 };
 
 class Heap {

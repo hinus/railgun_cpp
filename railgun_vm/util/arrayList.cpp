@@ -15,7 +15,9 @@ ArrayList<T>::ArrayList(int n) {
 
 template <typename T>
 void ArrayList<T>::add(T t) {
-    expand();
+    if (_size >= _length)
+        expand();
+
     _array[_size++] = t;
 }
 
@@ -32,18 +34,16 @@ void ArrayList<T>::insert(int index, T t) {
 
 template <typename T>
 void ArrayList<T>::expand() {
-    if (_size >= _length) {
-        void* temp = Universe::heap->allocate(sizeof(T) * (_length << 1));
-        T* new_array = new(temp)T[_length << 1];
-        for (int i = 0; i < _length; i++) {
-            new_array[i] = _array[i];
-        }
-        _array = new_array;
-        // we do not rely on this, but gc.
-        // delete _array;
-        _length <<= 1;
-        printf("expand an array to %d, size is %d\n", _length, _size);
+    void* temp = Universe::heap->allocate(sizeof(T) * (_length << 1));
+    T* new_array = new(temp)T[_length << 1];
+    for (int i = 0; i < _length; i++) {
+        new_array[i] = _array[i];
     }
+    _array = new_array;
+    // we do not rely on this, but gc.
+    // delete _array;
+    _length <<= 1;
+    printf("expand an array to %d, size is %d\n", _length, _size);
 }
 
 template <typename T>
@@ -63,15 +63,18 @@ T ArrayList<T>::get(int index) {
 
 template <typename T>
 void ArrayList<T>::set(int index, T t) {
+    if (_size <= index)
+        _size = index + 1;
+
+    while (_size > _length)
+        expand();
+
     _array[index] = t;
 }
 
 template <typename T>
-void ArrayList<T>::resize(int n) {
-    if (n > _length)
-        return;
-
-    _size = n;
+T ArrayList<T>::pop() {
+    return _array[--_size];
 }
 
 template <typename T>

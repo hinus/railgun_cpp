@@ -13,11 +13,10 @@ int main(int argc, char** argv) {
     BufferedInputStream input_stream(argv[1]);
     BinaryFileParser parser(&input_stream);
 
-    Interpreter interpreter;
     Universe::main_code = parser.parse();
     Universe::heap->gc();
 
-    interpreter.run(Universe::main_code);
+    Interpreter::get_instance()->run(Universe::main_code);
 
     input_stream.close();
 

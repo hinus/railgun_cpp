@@ -4,6 +4,10 @@
 #include "code/codeObject.hpp"
 #include "klass/klass.hpp"
 
+class OopClosure;
+class HiDict;
+class Generator;
+
 class FunctionKlass : public Klass {
 private:
     FunctionKlass();
@@ -13,25 +17,31 @@ public:
     static FunctionKlass* get_instance();
 
     virtual void print(HiObject* obj);
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class FunctionObject : public HiObject {
-friend class Interpreter;
+friend class FunctionKlass;
 friend class FrameObject;
+friend class Generator;
 
 private:
     CodeObject* _func_code;
     HiString*   _func_name;
-    NameTable   _globals;
-    ArrayList<HiObject*>* _defaults;
+    HiDict*     _globals;
+    ObjList     _defaults;
+
+    unsigned int _flags;
 
 public:
-    FunctionObject(HiObject* code_object, NameTable globals);
+    FunctionObject(HiObject* code_object, HiDict* globals);
     FunctionObject(Klass* klass) {
         _func_code = NULL;
         _func_name = NULL;
         _globals   = NULL;
         _defaults  = NULL;
+        _flags     = 0;
 
         set_klass(klass);
     }
@@ -40,8 +50,8 @@ public:
 
     HiString*  func_name()   { return _func_name; }
     HiObject*  call(ObjList args)        { return klass()->call(args); }
+    int  flags()             { return _flags; }
 };
-
 
 // Method objects.
 class MethodKlass : public Klass {
@@ -51,9 +61,14 @@ private:
 
 public:
     static MethodKlass* get_instance();
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class MethodObject : public HiObject {
+friend class MethodKlass;
+
 private:
     HiObject* _owner;
     FunctionObject* _func;
@@ -74,6 +89,7 @@ public:
     static bool is_native(HiObject* x);
     static bool is_method(HiObject* x);
     static bool is_function(HiObject* x);
+    static bool is_yield_function(HiObject* x);
 };
 
 class NativeFunctionKlass : public Klass {
@@ -83,6 +99,18 @@ private:
 
 public:
     static NativeFunctionKlass* get_instance();
+};
+
+class SysGCKlass : public Klass {
+private:
+    SysGCKlass() ;
+    static SysGCKlass* instance;
+
+public:
+    static SysGCKlass* get_instance();
+    
+public:
+    virtual HiObject* call(ObjList args);
 };
 
 #endif

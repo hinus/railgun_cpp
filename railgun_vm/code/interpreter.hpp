@@ -1,37 +1,48 @@
 #ifndef INTERPRETER_HPP
 #define INTERPRETER_HPP
 
-#include "code/bytecode.hpp"
 #include "code/codeObject.hpp"
-#include "util/stack.hpp"
 #include "util/map.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/frameObject.hpp"
 
-class Interpreter {
-private:
-    Stack<HiObject*>*     _stack;
-    Stack<int>*           _loop_stack;
-    ArrayList<HiObject*>* _consts;
-    ArrayList<HiObject*>* _names;
-    ArrayList<HiObject*>* _fast_locals;
-    NameTable             _locals_table;
-    NameTable             _globals_table;
-    NameTable             _builtins;
-    FrameObject*          _top_frame;
-    CodeObject*           _codes;
-    const char*           _bytecodes;
-    int                   _code_length;
-    int                   _pc;
+class OopClosure;
+class Generator;
 
-public:
+class Interpreter {
+    enum Status {
+        IS_OK,
+        IS_BREAK,
+        IS_EXCEPTION,
+        IS_RERAISE,
+        IS_YIELD,
+    };
+
+private:
+    static Interpreter*   _instance;
     Interpreter();
 
-    void      run        (CodeObject* codes);
-    void      call_func  (HiObject* func, ArrayList<HiObject*>* args, bool with_ret_value = true);
-    void      enter_frame(FrameObject* frame);
-    void      eval_code  ();
+    NameTable             _builtins;
+    HiObject*             _reraise_exception;
+    HiObject*             _pending_exception;
+    FrameObject*          _frame;
+
+    Status                _int_status;
+
+public:
+    static Interpreter* get_instance();
+
+    void      run             (CodeObject* codes);
+    void      build_frame     (HiObject* func, ObjList args);
+    void      enter_frame     (FrameObject* frame);
+    void      save_frame      (Generator* g);
+    void      eval_code       ();
+    HiObject* eval_generator  (Generator* g);
     void      leave_last_frame();
+    HiObject* call_virtual    (HiObject* func, ObjList args);
+
+
+    void      oops_do         (OopClosure* f);
 };
 
 #endif

@@ -162,6 +162,16 @@ HiObject* IntegerKlass::mod(HiObject* x, HiObject* y) {
     return new HiInteger(ix->value() % iy->value());
 }
 
+HiObject* IntegerKlass::bi_and(HiObject* x, HiObject* y) {
+    HiInteger* ix = (HiInteger*) x;
+    HiInteger* iy = (HiInteger*) y;
+
+    assert(ix && (ix->klass() == (Klass *)this));
+    assert(iy && (iy->klass() == (Klass *)this));
+
+    return new HiInteger(ix->value() & iy->value());
+}
+
 size_t IntegerKlass::size() {
     return sizeof(HiInteger);
 }

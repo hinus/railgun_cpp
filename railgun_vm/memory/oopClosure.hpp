@@ -23,6 +23,7 @@ public:
     virtual void do_array_list(ArrayList<Klass*>** alist) = 0;
     virtual void do_array_list(ArrayList<HiObject*>** alist) = 0;
     virtual void do_map(Map<HiObject*, HiObject*>** amap) = 0;
+    virtual void do_stack(Stack<HiObject*>** astack) = 0;
     virtual void do_raw_mem(char** mem, int length) = 0;
     virtual void do_klass(Klass** k) = 0;
 };
@@ -31,13 +32,14 @@ class ScavengeOopClosure : public OopClosure {
 private:
     Space* _from;
     Space* _to;
+    Space* _meta;
 
     Stack<HiObject*>* _oop_stack;
 
     HiObject* copy_and_push(HiObject* obj);
 
 public:
-    ScavengeOopClosure(Space* from, Space* to);
+    ScavengeOopClosure(Space* from, Space* to, Space* meta);
     virtual ~ScavengeOopClosure();
 
     virtual void do_oop(HiObject** oop);
@@ -45,6 +47,7 @@ public:
     virtual void do_array_list(ArrayList<Klass*>** alist);
     virtual void do_array_list(ArrayList<HiObject*>** alist);
     virtual void do_map(Map<HiObject*, HiObject*>** amap);
+    virtual void do_stack(Stack<HiObject*>** astack);
     virtual void do_raw_mem(char** mem, int length);
     // CAUTION : we do not move Klass, because they locate at MetaSpace.
     virtual void do_klass(Klass** k);

@@ -5,13 +5,13 @@
 
 class IntegerKlass : public Klass {
 private:
-	IntegerKlass();
-	static IntegerKlass* instance;
+    IntegerKlass();
+    static IntegerKlass* instance;
 
 public:
-	static IntegerKlass* get_instance();
+    static IntegerKlass* get_instance();
 
-	virtual void print(HiObject* obj);
+    virtual void print(HiObject* obj);
 
     virtual HiObject* greater  (HiObject* x, HiObject* y);
     virtual HiObject* less     (HiObject* x, HiObject* y);
@@ -26,6 +26,8 @@ public:
     virtual HiObject* div(HiObject* x, HiObject* y);
     virtual HiObject* mod(HiObject* x, HiObject* y);
 
+    virtual HiObject* bi_and(HiObject* x, HiObject* y);
+
     virtual size_t size();
 };
 
@@ -35,7 +37,7 @@ private:
     int _value;
 
 public:
-	HiInteger(int x);
+    HiInteger(int x);
 
     int value() { return _value; }
 

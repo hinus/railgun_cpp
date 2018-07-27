@@ -2,21 +2,37 @@
 #define HI_LIST_HPP
 
 #include "klass/klass.hpp"
-#include "object/hiString.hpp"
 #include "object/hiObject.hpp"
-#include "runtime/functionObject.hpp"
 #include "util/arrayList.hpp"
+
+class HiObject;
+class OopClosure;
 
 class ListKlass : public Klass {
 private:
-	ListKlass();
-	static ListKlass* instance;
+    ListKlass();
+    static ListKlass* instance;
 
 public:
-	static ListKlass* get_instance();
+    static ListKlass* get_instance();
 
-	virtual void print(HiObject* obj);
+    virtual void print(HiObject* obj);
     virtual HiObject* subscr (HiObject* x, HiObject* y);
+    virtual HiObject* iter(HiObject* x);
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
+};
+
+class ListIteratorKlass : public Klass {
+private:
+    static ListIteratorKlass* instance;
+    ListIteratorKlass() {}
+
+public:
+    static ListIteratorKlass* get_instance();
+
+    virtual HiObject* next(HiObject* x);
 };
 
 class HiList : public HiObject {
@@ -24,22 +40,28 @@ friend class ListKlass;
 
 private:
     ArrayList<HiObject*>* _inner_list;
+
 public:
     HiList();
     HiList(ObjList ol);
     ArrayList<HiObject*>* inner_list()  { return _inner_list; }
+
+    int size()                          { return _inner_list->size(); }
+    void append(HiObject* obj)          { _inner_list->add(obj); }
+    HiObject* pop()                     { return _inner_list->pop(); }
+    HiObject* get(int index)            { return _inner_list->get(index); }
+    void      set(int i, HiObject* o)   { _inner_list->set(i, o); }
+    HiObject* top()                     { return get(size() - 1); }
 };
 
 class ListAppendKlass : public Klass {
 private:
-	ListAppendKlass() {
-		set_super(NativeFunctionKlass::get_instance());
-	};
+    ListAppendKlass();
 
-	static ListAppendKlass* instance;
+    static ListAppendKlass* instance;
 
 public:
-	static ListAppendKlass* get_instance();
+    static ListAppendKlass* get_instance();
     
 public:
     virtual HiObject* call(ObjList args);

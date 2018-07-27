@@ -48,8 +48,6 @@ public:
         ArrayList<HiObject*>* varnames, 
         ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
         HiString* file_name, HiString* co_name, int lineno, HiString* notable);
-
-    void* operator new(size_t size);
 };
 
 #endif

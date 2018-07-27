@@ -1,6 +1,10 @@
 #include "object/hiList.hpp"
 #include "object/hiInteger.hpp"
+#include "object/hiDict.hpp"
+#include "object/hiString.hpp"
 #include "runtime/universe.hpp"
+#include "memory/oopClosure.hpp"
+#include "runtime/functionObject.hpp"
 #include <assert.h>
 
 ListKlass* ListKlass::instance = NULL;
@@ -13,11 +17,13 @@ ListKlass* ListKlass::get_instance() {
 }
 
 ListKlass::ListKlass() {
-    set_klass_dict(new Map<HiObject*, HiObject*>());
-    klass_dict()->put(new HiString("append"), 
+    HiDict * klass_dict = new HiDict();
+    klass_dict->put(new HiString("append"), 
         new FunctionObject(ListAppendKlass::get_instance()));
 
     HiTypeObject* list_type_obj = new HiTypeObject();
+
+    set_klass_dict(klass_dict);
     set_type_object(list_type_obj);
 }
 
@@ -48,6 +54,27 @@ HiObject* ListKlass::subscr(HiObject* x, HiObject* y) {
     return lx->inner_list()->get(iy->value());
 }
 
+size_t ListKlass::size() {
+    return sizeof(HiList);
+}
+
+HiObject* ListKlass::iter(HiObject* x) {
+    assert(x && x->klass() == (Klass*) this);
+
+    HiObject* iterator = new HiObject();
+    iterator->set_klass(ListIteratorKlass::get_instance());
+    iterator->setattr(new HiString("list"), x);
+    iterator->setattr(new HiString("iter_cnt"), new HiInteger(0));
+
+    return iterator;
+}
+
+void ListKlass::oops_do(OopClosure* f, HiObject* obj) {
+    assert(obj && obj->klass() == (Klass*) this);
+
+    f->do_array_list(&((HiList*)obj)->_inner_list);
+}
+
 HiList::HiList() {
     set_klass(ListKlass::get_instance());
     _inner_list = new ArrayList<HiObject*>();
@@ -67,7 +94,39 @@ ListAppendKlass* ListAppendKlass::get_instance() {
     return instance;
 }
 
+ListAppendKlass::ListAppendKlass() {
+    set_super(NativeFunctionKlass::get_instance());
+}
+
 HiObject* ListAppendKlass::call(ObjList args) {
-    ((HiList*)(args->get(0)))->inner_list()->add(args->get(1));
+    ((HiList*)(args->get(0)))->append(args->get(1));
     return Universe::HiNone;
 }
+
+/*
+ * List Iterators
+ */
+ListIteratorKlass* ListIteratorKlass::instance = NULL;
+
+ListIteratorKlass* ListIteratorKlass::get_instance() {
+    if (instance == NULL)
+        instance = new ListIteratorKlass();
+
+    return instance;
+}
+
+HiObject* ListIteratorKlass::next(HiObject* x) {
+    HiString* attr_name = new HiString("iter_cnt");
+    HiObject* iter_cnt = x->getattr(attr_name);
+
+    HiList* alist = (HiList*)(x->getattr(new HiString("list")));
+    if (((HiInteger*)iter_cnt)->value() < alist->inner_list()->size()) {
+        HiObject* obj = alist->subscr(iter_cnt);
+        iter_cnt = iter_cnt->add(new HiInteger(1));
+        x->setattr(attr_name, iter_cnt);
+        return obj;
+    }
+    else // TODO : we need Traceback here to mark iteration end
+        return NULL;
+}
+

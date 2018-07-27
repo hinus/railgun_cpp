@@ -24,6 +24,8 @@ public:
     static const unsigned char INPLACE_MODULO = 59;
     static const unsigned char STORE_SUBSCR = 60;
 
+    static const unsigned char BINARY_AND = 64;
+
     static const unsigned char GET_ITER = 68;
 
     static const unsigned char PRINT_ITEM = 71;
@@ -32,18 +34,23 @@ public:
     static const unsigned char BREAK_LOOP = 80;
     static const unsigned char LOAD_LOCALS = 82;
     static const unsigned char RETURN_VALUE = 83;
+    static const unsigned char YIELD_VALUE = 86;
     static const unsigned char POP_BLOCK = 87;
+    static const unsigned char END_FINALLY = 88;
     static const unsigned char BUILD_CLASS = 89;
 
     // TODO: This is a separator
     static const unsigned char HAVE_ARGUMENT = 90; /* Opcodes from here have an argument: */
 
-    static const unsigned char STORE_NAME = 90; /* Index in name list */
+    static const unsigned char STORE_NAME = 90;  /* Index in name list */
+    static const unsigned char DELETE_NAME = 91; /* "" */
+    static const unsigned char UNPACK_SEQUENCE = 92;  /* Number of sequence items */
     static const unsigned char FOR_ITER = 93;
+    static const unsigned char LIST_APPEND = 94;
     static const unsigned char STORE_ATTR = 95;  /* Index in name list */
     static const unsigned char DELETE_ATTR = 96;
     static const unsigned char STORE_GLOBAL = 97;
-    static const unsigned char DUP_TOPX = 99;	/* number of items to duplicate */
+    static const unsigned char DUP_TOPX = 99;    /* number of items to duplicate */
     static const unsigned char LOAD_CONST = 100; /* Index in const list */
     static const unsigned char LOAD_NAME = 101; /* Index in name list */
     static const unsigned char BUILD_TUPLE = 102;
@@ -54,17 +61,22 @@ public:
     static const unsigned char JUMP_FORWARD = 110; /* Number of bytes to skip */
     static const unsigned char JUMP_IF_FALSE_OR_POP = 111; /* Target byte offset from beginning
                                     of code */
-
+    static const unsigned char JUMP_IF_TRUE_OR_POP = 112;  /* "" */
     static const unsigned char JUMP_ABSOLUTE = 113;
     static const unsigned char POP_JUMP_IF_FALSE = 114;
     static const unsigned char POP_JUMP_IF_TRUE = 115;
-    static const unsigned char LOAD_GLOBAL = 116; /* Index in name list */
-    static const unsigned char SETUP_LOOP = 120; /* Target address (relative) */
+    static const unsigned char LOAD_GLOBAL = 116;   /* Index in name list */
+    static const unsigned char SETUP_LOOP = 120;    /* Target address (relative) */
+    static const unsigned char SETUP_EXCEPT = 121;  /* "" */
+    static const unsigned char SETUP_FINALLY = 122; /* "" */
+
     static const unsigned char LOAD_FAST  = 124; /* Local variable number */
     static const unsigned char STORE_FAST = 125; /* Local variable number */
 
+    static const unsigned char RAISE_VARARGS = 130;
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
+    static const unsigned char MAP_ADD = 147;
 
     enum COMPARE {
         LESS = 0,
@@ -72,7 +84,12 @@ public:
         EQUAL,
         NOT_EQUAL,
         GREATER,
-        GREATER_EQUAL
+        GREATER_EQUAL,
+        IN,
+        NOT_IN,
+        IS,
+        IS_NOT,
+        EXC_MATCH
     };
 };
 

@@ -15,14 +15,17 @@ enum vm_type {
 class HiTypeObject;
 class HiObject;
 class HiString;
+class HiDict;
 class OopClosure;
 
 class Klass {
 private:
     Klass*        _super;
     HiTypeObject* _type_object;
-    NameTable     _klass_dict;
+    HiDict*       _klass_dict;
     HiString*     _name;
+
+    HiObject* find_and_call(HiObject* x, ObjList args, HiObject* func_name); 
 
 public:
     Klass();
@@ -34,15 +37,13 @@ public:
     void set_type_object(HiTypeObject* x) { _type_object = x; }
     HiTypeObject* type_object()           { return _type_object; }
 
-    void set_klass_dict(NameTable dict)   { _klass_dict = dict; }
-    NameTable klass_dict()                { return _klass_dict; }
+    void set_klass_dict(HiDict* dict)     { _klass_dict = dict; }
+    HiDict* klass_dict()                  { return _klass_dict; }
 
     void set_name(HiString* x)            { _name = x; }
     HiString* name()                      { return _name; }
 
-    NameTable* klass_dict_address()       { return &_klass_dict; }
-
-    virtual void print(HiObject* obj) {}
+    virtual void print(HiObject* obj);
 
     virtual HiObject* greater  (HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* less     (HiObject* x, HiObject* y) { return 0; }
@@ -51,14 +52,19 @@ public:
     virtual HiObject* ge       (HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* le       (HiObject* x, HiObject* y) { return 0; }
 
-    virtual HiObject* add(HiObject* x, HiObject* y) { return 0; }
-    virtual HiObject* sub(HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* add(HiObject* x, HiObject* y);
+    virtual HiObject* sub(HiObject* x, HiObject* y);
     virtual HiObject* mul(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* div(HiObject* x, HiObject* y) { return 0; }
     virtual HiObject* mod(HiObject* x, HiObject* y) { return 0; }
 
+    virtual HiObject* bi_and(HiObject* x, HiObject* y);
+
     virtual HiObject* getattr(HiObject* x, HiString* y) { return 0; }
-    virtual HiObject* subscr (HiObject* x, HiObject* y) { return 0; }
+    virtual HiObject* subscr (HiObject* x, HiObject* y);
+    virtual HiObject* iter(HiObject* x);
+    virtual HiObject* next(HiObject* x);
+    virtual void store_subscr (HiObject* x, HiObject* y, HiObject* z);
 
     // alloacte instances
     virtual HiObject* allocate_instance() { return 0; }
